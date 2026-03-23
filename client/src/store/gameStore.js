@@ -24,11 +24,15 @@ export const useGameStore = create((set, get) => ({
   },
   
   createRoom: () => {
-    socket.emit('create_room', { playerName: get().playerName });
+    const playerId = localStorage.getItem('unoish_uuid') || Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('unoish_uuid', playerId);
+    socket.emit('create_room', { playerName: get().playerName, playerId });
   },
   
   joinRoom: (roomId) => {
-    socket.emit('join_room', { roomId, playerName: get().playerName });
+    const playerId = localStorage.getItem('unoish_uuid') || Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('unoish_uuid', playerId);
+    socket.emit('join_room', { roomId, playerName: get().playerName, playerId });
   },
   
   leaveRoom: () => {

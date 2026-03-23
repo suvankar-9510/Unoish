@@ -22,6 +22,7 @@ const io = new Server(server, {
 // Game State Storage (In-Memory)
 const rooms = new Map();
 const roomTimers = new Map();
+const disconnectTimers = new Map();
 
 // Helper to Generate Deck
 const CHOSEN_COLORS = ['uno-red', 'uno-blue', 'uno-green', 'uno-yellow'];
@@ -51,11 +52,11 @@ function createDeck() {
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  socket.on('create_room', ({ playerName }) => {
-    const roomId = Math.random().toString(36).substr(2, 4).toUpperCase();
+  socket.on('create_room', ({ playerName, playerId }) => {
+    const roomId = Math.random().toString(36).substring(2, 6).toUpperCase();
     rooms.set(roomId, {
       id: roomId,
-      players: [{ id: socket.id, name: playerName, hand: [], isHost: true, avatar: `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${playerName}` }],
+      players: [{ id: socket.id, uuid: playerId, name: playerName, hand: [], isHost: true, avatar: `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${playerName}` }],
       deck: [],
       discardPile: [],
       direction: 1, // 1 for clockwise, -1 for counter-clockwise
@@ -68,16 +69,38 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('game_update', rooms.get(roomId));
   });
 
-  socket.on('join_room', ({ roomId, playerName }) => {
+  socket.on('join_room', ({ roomId, playerName, playerId }) => {
     const room = rooms.get(roomId);
-    if (!room) return socket.emit('error', 'Room not found');
-    if (room.started) return socket.emit('error', 'Game already started');
-    if (room.players.length >= 5) return socket.emit('error', 'Room full');
-
-    if (!room.players.find(p => p.id === socket.id)) {
-      room.players.push({ id: socket.id, name: playerName, hand: [], isHost: false, avatar: `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${playerName}` });
+    if (!room) {
+      socket.emit('error', 'Room not found');
+      return;
     }
-    
+
+    // Attempt Reconnection
+    const existingPlayer = room.players.find(p => p.uuid === playerId);
+    if (existingPlayer) {
+       // Clear disconnect timer
+       if (disconnectTimers.has(playerId)) {
+         clearTimeout(disconnectTimers.get(playerId));
+         disconnectTimers.delete(playerId);
+       }
+       existingPlayer.id = socket.id; // Update their socket id to the new connection
+       existingPlayer.disconnected = false;
+       socket.join(roomId);
+       io.to(roomId).emit('game_update', room);
+       return;
+    }
+
+    if (room.started) { // Using 'started' instead of 'gameState' for consistency with existing code
+      socket.emit('error', 'Game already started');
+      return;
+    }
+    if (room.players.length >= 5) {
+      socket.emit('error', 'Room full');
+      return;
+    }
+
+    room.players.push({ id: socket.id, uuid: playerId, name: playerName, hand: [], isHost: false, avatar: `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${playerName}` });
     socket.join(roomId);
     io.to(roomId).emit('game_update', room);
   });
@@ -316,14 +339,39 @@ io.on('connection', (socket) => {
     }
   });
 
-  function handlePlayerLeaving(socketId) {
+  function handlePlayerLeaving(socketId, explicitLeave = false) {
     for (const [roomId, room] of rooms.entries()) {
       let playerIndex = room.players.findIndex(p => p.id === socketId);
       if (playerIndex !== -1) {
         let player = room.players[playerIndex];
         
         if (room.gameState === 'playing' || room.gameState === 'ended') {
-          // Convert player to bot seamlessly mid-game
+          if (!explicitLeave) {
+            // Unintentional disconnect: Start 15s grace period
+            player.disconnected = true;
+            io.to(roomId).emit('game_update', room);
+            io.to(roomId).emit('player_left', player.name + ' disconnected. Waiting 15s to reconnect...');
+            
+            const timer = setTimeout(() => {
+              if (rooms.has(roomId) && player.disconnected) {
+                // Time expired -> AI takeover
+                player.isBot = true;
+                player.disconnected = false; // Resolved
+                io.to(roomId).emit('player_left', player.name + ' abandoned the match. AI took over!');
+                io.to(roomId).emit('game_update', room);
+                if (room.currentPlayerIndex === playerIndex && !player.finishedRank) {
+                  setTimeout(() => playBotTurn(room), 1000);
+                }
+                
+                if (room.players.every(p => p.isBot)) rooms.delete(roomId);
+              }
+            }, 15000);
+            
+            disconnectTimers.set(player.uuid, timer);
+            return;
+          }
+
+          // Explicit 'Leave Room' clicked: Convert instantly
           player.isBot = true;
           io.to(roomId).emit('player_left', player.name);
           
@@ -357,7 +405,7 @@ io.on('connection', (socket) => {
   }
 
   socket.on('leave_room', (roomId) => {
-    handlePlayerLeaving(socket.id);
+    handlePlayerLeaving(socket.id, true);
     socket.leave(roomId);
   });
 

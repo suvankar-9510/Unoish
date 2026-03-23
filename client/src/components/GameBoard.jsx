@@ -160,16 +160,33 @@ export default function GameBoard() {
                     +{punish.amount}
                   </div>
                 )}
-                <div className={`relative w-12 md:w-16 h-12 md:h-16 rounded-full p-1 border-2 ${gameState.currentPlayerIndex === gameState.players.findIndex(p => p.id === opp.id) ? 'glow-active border-uno-green bg-uno-green/20 pulse-ring' : 'border-transparent bg-white/10'}`}>
-                   <div className="absolute inset-1 rounded-full bg-surface-variant overflow-hidden flex items-center justify-center">
+                <div className={`relative w-12 md:w-16 h-12 md:h-16 rounded-full p-1 border-2 ${gameState.currentPlayerIndex === gameState.players.findIndex(p => p.id === opp.id) ? 'glow-active border-uno-green bg-uno-green/20 pulse-ring' : 'border-transparent bg-white/10'} ${opp.disconnected ? 'opacity-30 grayscale' : ''}`}>
+                   <div className="absolute inset-1 rounded-full bg-surface-variant overflow-hidden flex items-center justify-center relative">
                       <img src={opp.avatar || `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${opp.name}`} alt="avatar" className="w-full h-full object-cover" />
+                      {opp.disconnected && (
+                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center pointer-events-none">
+                            <span className="material-symbols-outlined text-white animate-spin text-sm md:text-xl">sync</span>
+                         </div>
+                      )}
                    </div>
+                   
+                   {/* Flashing UNO Warning Badge */}
+                   {opp.hand?.length === 1 && !opp.finishedRank && !opp.disconnected && (
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: [1, 1.2, 1], rotate: [0, -10, 10, 0] }}
+                        transition={{ repeat: Infinity, duration: 1 }}
+                        className="absolute -top-3 -right-3 md:-top-4 md:-right-4 bg-uno-red text-white text-[9px] md:text-[11px] font-black px-2 py-1 rounded-full shadow-[0_0_15px_#ff5555] border-2 border-white z-[60] skew-x-[-10deg]"
+                      >
+                        UNO!
+                      </motion.div>
+                   )}
                 </div>
-                <span className="font-label font-bold text-[10px] md:text-xs uppercase tracking-widest text-white/70 mt-1 md:mt-2 max-w-[60px] md:max-w-none truncate text-center">
-                  {opp.name} {opp.finishedRank && `(🏆 ${opp.finishedRank})`}
+                <span className={`font-label font-bold text-[10px] md:text-xs uppercase tracking-widest ${opp.disconnected ? 'text-uno-red animate-pulse' : 'text-white/70'} mt-1 md:mt-2 max-w-[60px] md:max-w-none truncate text-center`}>
+                  {opp.name} {opp.finishedRank ? `(🏆 ${opp.finishedRank})` : opp.disconnected ? '(Wait...)' : ''}
                 </span>
                 {!opp.finishedRank && (
-                  <div className="absolute -bottom-2 -right-2 bg-uno-red text-white text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full border-2 border-white shadow-lg">
+                  <div className="absolute -bottom-2 -right-2 md:bottom-2 md:-right-2 bg-uno-red text-white text-[10px] md:text-xs font-black w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full border border-white shadow-lg z-50">
                     {opp.hand?.length || opp.cardCount}
                   </div>
                 )}

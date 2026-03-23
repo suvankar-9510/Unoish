@@ -376,9 +376,19 @@ export default function GameBoard() {
             {myPlayer?.hand?.map((card, i) => {
               const baseBg = getCardBgColor(card.color);
               const textC = getCardTextColor(card.color);
-              
-              const canPlay = isMyTurn && !myPlayer.finishedRank && (card.color === topCard.color || card.value === topCard.value || card.type === 'wild' || (topCard.declaredColor === card.color));
-              
+
+              // A card is playable if it's my turn AND the card matches
+              const canPlay = isMyTurn && !myPlayer.finishedRank && topCard && (
+                card.color === topCard.color ||
+                card.value === topCard.value ||
+                card.type === 'wild' ||
+                (topCard.declaredColor && card.color === topCard.declaredColor)
+              );
+              // Not my turn at all → full grey
+              const notMyTurn = !isMyTurn || myPlayer?.finishedRank;
+              // My turn but this specific card is unplayable
+              const unplayable = !notMyTurn && !canPlay;
+
               return (
                 <motion.div 
                   layout
@@ -388,14 +398,20 @@ export default function GameBoard() {
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   key={card.id} 
                   onClick={() => handleCardClick(card)}
-                  className={`relative w-[6.5rem] h-36 shrink-0 rounded-[14px] flex flex-col justify-between p-2 border-[3px] border-white/90 shadow-[0_15px_30px_rgba(0,0,0,0.6)] cursor-pointer group origin-bottom -ml-8 md:-ml-10
-                    ${baseBg} 
-                    ${canPlay ? `ring-2 ring-white z-20 hover:-translate-y-12 hover:z-30 hover:scale-105 brightness-110` : 'opacity-80 grayscale-[0.2] hover:z-30 hover:-translate-y-4'}
+                  className={`relative w-[6.5rem] h-36 shrink-0 rounded-[14px] flex flex-col justify-between p-2 border-[3px] shadow-[0_15px_30px_rgba(0,0,0,0.6)] cursor-pointer group origin-bottom -ml-8 md:-ml-10
+                    ${baseBg}
+                    ${canPlay
+                      ? 'border-[#FFD700] ring-4 ring-[#FFD700]/70 ring-offset-0 shadow-[0_0_22px_5px_rgba(255,215,0,0.55)] z-20 hover:-translate-y-12 hover:z-30 hover:scale-105 brightness-110 animate-[pulse_1.5s_ease-in-out_infinite]'
+                      : unplayable
+                        ? 'border-white/30 opacity-45 grayscale hover:z-30 hover:-translate-y-2 cursor-not-allowed'
+                        : 'border-white/30 opacity-40 grayscale-[0.6] hover:-translate-y-2'}
                   `}
-                  style={{
-                    zIndex: 10 + i
-                  }}
+                  style={{ zIndex: 10 + i }}
                 >
+                  {/* Golden "playable" shimmer overlay */}
+                  {canPlay && (
+                    <div className="absolute inset-0 rounded-[11px] pointer-events-none z-20 bg-gradient-to-tr from-yellow-300/20 via-transparent to-yellow-100/10 animate-[pulse_1.5s_ease-in-out_infinite]" />
+                  )}
                   <div className="absolute inset-1 border border-white/40 rounded-lg pointer-events-none z-10"></div>
                   <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/20 rounded-[11px] pointer-events-none z-10"></div>
                   

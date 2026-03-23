@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { io } from 'socket.io-client';
 
-const URL = process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:3001';
+const URL = import.meta.env.MODE === 'production' 
+  ? (import.meta.env.VITE_SERVER_URL || window.location.origin) 
+  : 'http://localhost:3001';
 export const socket = io(URL);
 
 export const useGameStore = create((set, get) => ({

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Battle Arena - Game Lobby</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "uno-red": "#ff5555",
+              "uno-blue": "#5555ff",
+              "uno-green": "#55aa55",
+              "uno-yellow": "#ffaa00",
+              "on-secondary-fixed": "#003076",
+              "surface-variant": "#dbdde0",
+              "secondary-container": "#c0d1ff",
+              "on-primary-fixed-variant": "#5a0f00",
+              "tertiary-dim": "#005c2b",
+              "surface-container-low": "#f0f1f3",
+              "on-primary": "#ffefec",
+              "inverse-on-surface": "#9c9d9f",
+              "surface-bright": "#f6f6f8",
+              "tertiary-container": "#3fff8b",
+              "on-primary-fixed": "#000000",
+              "error-dim": "#9f0519",
+              "surface-tint": "#af2700",
+              "on-tertiary-fixed": "#004820",
+              "primary-fixed-dim": "#ff5c34",
+              "surface-container-highest": "#dbdde0",
+              "secondary-dim": "#004aad",
+              "tertiary-fixed": "#3fff8b",
+              "on-surface": "#2d2f31",
+              "outline": "#757779",
+              "on-tertiary": "#cdffd3",
+              "tertiary": "#006a33",
+              "surface-dim": "#d2d4d8",
+              "primary-container": "#ff7856",
+              "surface-container-high": "#e1e2e5",
+              "outline-variant": "#acadaf",
+              "surface-container": "#e7e8ea",
+              "on-secondary-fixed-variant": "#004baf",
+              "error-container": "#fb5151",
+              "on-error": "#ffefee",
+              "on-tertiary-fixed-variant": "#006832",
+              "on-primary-container": "#490b00",
+              "error": "#b31b25",
+              "on-surface-variant": "#5a5c5d",
+              "tertiary-fixed-dim": "#24f07e",
+              "surface": "#f6f6f8",
+              "secondary-fixed": "#c0d1ff",
+              "on-error-container": "#570008",
+              "primary-fixed": "#ff7856",
+              "on-secondary-container": "#00429c",
+              "secondary-fixed-dim": "#acc3ff",
+              "secondary": "#0055c4",
+              "on-secondary": "#f0f2ff",
+              "background": "#f6f6f8",
+              "surface-container-lowest": "#ffffff",
+              "primary": "#af2700",
+              "inverse-surface": "#0c0e10",
+              "primary-dim": "#9a2100",
+              "on-background": "#2d2f31",
+              "on-tertiary-container": "#005d2c",
+              "inverse-primary": "#ff562c"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Be Vietnam Pro"],
+              "label": ["Plus Jakarta Sans"],
+              "game": ["Plus Jakarta Sans", "system-ui"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        background-color: #f6f6f8;
+      }
+      .font-headline {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+      .lobby-code-glow {
+        text-shadow: 0 0 20px rgba(175, 39, 0, 0.2);
+      }
+    </style>
+<style>
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-b-3xl shadow-xl shadow-slate-900/5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="Stylized avatar of the game host" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYE8iYR_RxRrtWpt7zMXHRfODy0R9wodTDAw-hnZU6n6t0fHTSWXtSg54SCZL_VWruL3GNC-s0pm8svd9K0JZzjQibUPPRk48ixZei-Y_xiIm2pTrWWFvAd-AnhK75HNERT_Ja6vE_ra35_3esSeEz40fJCz5TqK5lSAOQ6JpRUi7w4MkUkKsAX3uygEq3bJ3UlySkw3FV0Tw-zGMc12mhRl2y49JA_552ywpCJGCTyP65QmCT0CkhPF4MTOVpcBt0qkCgxKGrenI"/>
+</div>
+<span class="text-xl font-black text-slate-900 dark:text-slate-50 font-headline tracking-tight uppercase">Battle Arena</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-500 dark:text-slate-400 hover:scale-105 transition-transform active:scale-95 duration-200">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</nav>
+<main class="pt-24 px-6 max-w-2xl mx-auto">
+<!-- Room Identity Section -->
+<section class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-[2.5rem] shadow-sm flex flex-col justify-between min-h-[180px] border-4 border-surface-container">
+<div>
+<span class="text-on-surface-variant font-headline text-[10px] uppercase tracking-[0.2em] font-extrabold">Lobby Code</span>
+<h1 class="text-6xl font-black font-game text-uno-red tracking-tighter mt-1 lobby-code-glow italic">UNO-XYZ9</h1>
+</div>
+<div class="flex gap-3 mt-6">
+<button class="bg-uno-yellow hover:scale-105 active:scale-95 transition-all text-white px-8 py-3 rounded-full font-headline font-black uppercase text-sm flex items-center gap-2 shadow-lg shadow-uno-yellow/30">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">share</span>
+                        Share Link
+                    </button>
+</div>
+</div>
+<div class="bg-uno-blue p-6 rounded-[2.5rem] flex flex-col items-center justify-center text-center shadow-lg shadow-uno-blue/20">
+<div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-white">group</span>
+</div>
+<p class="font-headline font-black text-white text-3xl italic">3 / 5</p>
+<p class="text-white/80 text-[10px] font-extrabold uppercase tracking-widest">Joined</p>
+</div>
+</section>
+<!-- Players List -->
+<section class="mt-10">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline text-2xl font-black text-on-surface italic uppercase tracking-tight">The Arena Floor</h2>
+<span class="text-uno-green font-black text-[10px] bg-uno-green/10 border border-uno-green/20 px-4 py-1.5 rounded-full uppercase tracking-wider">Waiting for Host</span>
+</div>
+<div class="space-y-4">
+<!-- Host Player (Red Accent) -->
+<div class="bg-surface-container-lowest p-4 rounded-3xl flex items-center justify-between border-l-8 border-uno-red shadow-sm group hover:scale-[1.01] transition-transform">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Host" class="w-14 h-14 rounded-full bg-white shadow-md ring-2 ring-uno-red/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVrIZvjmyBe82ahFJg_eWwlQwTCiyIrKnHtObg2Dx4jYWxCMIDtyyDfw5ogT4_q8NORoygGOjTadsn-6ZX66xyPIfx4X8RVUtcZWCEGycWxywsthAnyfD1YH1fetgyOv9pwXcj_fEMynazNYSWkIN_bTMAQccta_smjWPNYjIdRvbpYgPtyO_R50sS-9Q07FGadM2X6iEXzY1Vxn-RqnQJO0P6IpRHZtTIsCZFnFzoG-0a31z4a_oKIH7tx3P3zLo6qcHr_wVRruQ"/>
+<span class="absolute -top-1 -right-1 bg-uno-red text-white text-[8px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">Host</span>
+</div>
+<div>
+<p class="font-headline font-black text-on-surface uppercase tracking-tight italic">DragonSlayer_99</p>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Ready to ignite the board</p>
+</div>
+</div>
+<span class="w-3 h-3 rounded-full bg-uno-green animate-pulse"></span>
+</div>
+<!-- Joined Player 1 (Blue Accent) -->
+<div class="bg-surface-container-lowest p-4 rounded-3xl flex items-center justify-between border-l-8 border-uno-blue shadow-sm">
+<div class="flex items-center gap-4">
+<img alt="Player 2" class="w-14 h-14 rounded-full bg-white shadow-sm ring-2 ring-uno-blue/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDICT4-J2qyBFsE-9GTOC1Ffu25RaBKP8n-zxjxY_GcndGFrP1c1ovq2nuDuJuSiRXuGd2hpE-2Jq85dRpBc1JlbsMD42rF9S63EmAD330CeN80PBSLGg4sqTk9R4qnhL6_UsVERCOKnBUcXKAL4uLVahxv8ykoRnk0faBqwvpXnC-NDpfCP_xxzlWfbx3relVTeHff_NOKB-eGYGXV2vRUtGBJ1DOH4rDLus6Lvt3_xRCI67tJOSfyEL8ZrXOWNRG95RyQs5q4Q-g"/>
+<div>
+<p class="font-headline font-black text-on-surface uppercase tracking-tight italic">CardShark_Vez</p>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Level 42 Strategist</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-uno-green" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<!-- Joined Player 2 (Green Accent) -->
+<div class="bg-surface-container-lowest p-4 rounded-3xl flex items-center justify-between border-l-8 border-uno-green shadow-sm">
+<div class="flex items-center gap-4">
+<img alt="Player 3" class="w-14 h-14 rounded-full bg-white shadow-sm ring-2 ring-uno-green/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvqkM_ebDSTRPDAacsdMAcfbt7LCrbuH4JrbNGrdOiu7gEMmA3cOSEqur90p1abHXnmm-NqD1Ui4MrYzWETxc6csFoZmJgAD9DYDymlL19qhJsjS9g6YuNg5DXjGVLxHh1aXhK132Qgjer7-cNd1r8i40kr6ybq3gc-YQHxWrrrmMQpNudOvAQVRNzAmtPJgVNl1O9nZRtDjhFNMFpZlq1eh6Y0NIc6_b4w7ebzIYantMOOoi-J7AkqJ1wDS3joxKHLzDSPWF5dAo"/>
+<div>
+<p class="font-headline font-black text-on-surface uppercase tracking-tight italic">MysticMage</p>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider italic">Joining...</p>
+</div>
+</div>
+<div class="w-5 h-5 border-4 border-uno-green/20 border-t-uno-green rounded-full animate-spin"></div>
+</div>
+<!-- Placeholder (Yellow Accent Concept) -->
+<div class="border-2 border-dashed border-uno-yellow/20 p-4 rounded-3xl flex items-center gap-4 bg-uno-yellow/5">
+<div class="w-14 h-14 rounded-full bg-white flex items-center justify-center border-2 border-dashed border-uno-yellow/40">
+<span class="material-symbols-outlined text-uno-yellow/50">person_add</span>
+</div>
+<p class="font-headline font-black text-uno-yellow/40 uppercase tracking-widest text-[10px] italic">Waiting for challenger...</p>
+</div>
+</div>
+</section>
+<!-- Start Action -->
+<div class="mt-12 flex flex-col gap-4">
+<button class="w-full bg-uno-green hover:bg-green-600 text-white py-6 rounded-[2rem] font-headline font-black text-2xl uppercase tracking-[0.2em] shadow-2xl shadow-uno-green/40 hover:scale-[1.02] active:scale-95 transition-all italic">
+                Start Game
+            </button>
+<p class="text-center text-on-surface-variant text-[10px] font-black uppercase tracking-[0.15em]">Host must initiate battle when all chairs are filled.</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md rounded-t-[2.5rem] shadow-[0_-8px_30px_rgb(0,0,0,0.08)]">
+<a class="flex flex-col items-center justify-center bg-uno-red/10 text-uno-red rounded-full px-6 py-2 scale-110" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">playing_cards</span>
+<span class="font-headline font-black text-[9px] uppercase tracking-tighter">Play</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-uno-blue transition-colors" href="#">
+<span class="material-symbols-outlined">style</span>
+<span class="font-headline font-black text-[9px] uppercase tracking-tighter">Cards</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-uno-green transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-headline font-black text-[9px] uppercase tracking-tighter">Social</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-uno-yellow transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-headline font-black text-[9px] uppercase tracking-tighter">Shop</span>
+</a>
+</nav>
+</body></html>

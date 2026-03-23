@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Battle Arena - Card Clash</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "uno-red": "#ff5555",
+              "uno-blue": "#5555ff",
+              "uno-green": "#55aa55",
+              "uno-yellow": "#ffaa00",
+              "uno-black": "#000000",
+              "on-secondary-fixed": "#003076",
+              "surface-variant": "#dbdde0",
+              "secondary-container": "#c0d1ff",
+              "on-primary-fixed-variant": "#5a0f00",
+              "tertiary-dim": "#55aa55",
+              "surface-container-low": "#f0f1f3",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#9c9d9f",
+              "surface-bright": "#f6f6f8",
+              "tertiary-container": "#55aa55",
+              "on-primary-fixed": "#000000",
+              "error-dim": "#ff5555",
+              "surface-tint": "#ff5555",
+              "on-tertiary-fixed": "#004820",
+              "primary-fixed-dim": "#ff5555",
+              "surface-container-highest": "#dbdde0",
+              "secondary-dim": "#5555ff",
+              "tertiary-fixed": "#55aa55",
+              "on-surface": "#2d2f31",
+              "outline": "#757779",
+              "on-tertiary": "#ffffff",
+              "tertiary": "#55aa55",
+              "surface-dim": "#d2d4d8",
+              "primary-container": "#ff5555",
+              "surface-container-high": "#e1e2e5",
+              "outline-variant": "#acadaf",
+              "surface-container": "#e7e8ea",
+              "on-secondary-fixed-variant": "#5555ff",
+              "error-container": "#ff5555",
+              "on-error": "#ffffff",
+              "on-tertiary-fixed-variant": "#55aa55",
+              "on-primary-container": "#490b00",
+              "error": "#ff5555",
+              "on-surface-variant": "#5a5c5d",
+              "tertiary-fixed-dim": "#55aa55",
+              "surface": "#f6f6f8",
+              "secondary-fixed": "#5555ff",
+              "on-error-container": "#570008",
+              "primary-fixed": "#ff5555",
+              "on-secondary-container": "#5555ff",
+              "secondary-fixed-dim": "#5555ff",
+              "secondary": "#5555ff",
+              "on-secondary": "#ffffff",
+              "background": "#f6f6f8",
+              "surface-container-lowest": "#ffffff",
+              "primary": "#ff5555",
+              "inverse-surface": "#0c0e10",
+              "primary-dim": "#d44444",
+              "on-background": "#2d2f31",
+              "on-tertiary-container": "#ffffff",
+              "inverse-primary": "#ff5555"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Be Vietnam Pro"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card-motif-bg {
+            background-color: #f6f6f8;
+            background-image: 
+                radial-gradient(#ff5555 1px, transparent 1px),
+                radial-gradient(#5555ff 1px, transparent 1px),
+                radial-gradient(#55aa55 1px, transparent 1px),
+                radial-gradient(#ffaa00 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px, 30px 0, 0 30px;
+        }
+        .uno-card-shape {
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .uno-inner-oval {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            width: 85%;
+            height: 70%;
+            background: white;
+            border-radius: 50%;
+        }
+        .uno-number {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="font-body bg-surface text-on-surface min-h-screen flex flex-col overflow-x-hidden">
+<main class="flex-grow flex flex-col items-center justify-center px-6 relative card-motif-bg overflow-hidden">
+<!-- Colorful Asymmetry Decor -->
+<div class="absolute -top-20 -right-20 w-80 h-80 bg-uno-yellow/20 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-20 -left-20 w-96 h-96 bg-uno-blue/30 rounded-full blur-3xl"></div>
+<div class="z-10 w-full max-w-md flex flex-col gap-8">
+<!-- Logo Cluster -->
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="relative w-36 h-48 flex items-center justify-center">
+<!-- Fanned Uno-style Cards -->
+<div class="absolute inset-0 bg-uno-yellow rotate-[-15deg] uno-card-shape border-4 border-white flex items-center justify-center">
+<span class="absolute top-2 left-2 text-white uno-number text-xs">2</span>
+<div class="uno-inner-oval opacity-20"></div>
+</div>
+<div class="absolute inset-0 bg-uno-blue rotate-[10deg] translate-x-4 uno-card-shape border-4 border-white flex items-center justify-center shadow-lg">
+<span class="absolute top-2 left-2 text-white uno-number text-xs">7</span>
+<div class="uno-inner-oval opacity-20"></div>
+</div>
+<div class="absolute inset-0 bg-uno-red uno-card-shape border-4 border-white flex items-center justify-center shadow-2xl">
+<div class="uno-inner-oval"></div>
+<span class="uno-number text-uno-red text-5xl z-10">C</span>
+<span class="absolute top-2 left-2 text-white uno-number text-base">C</span>
+<span class="absolute bottom-2 right-2 text-white uno-number text-base rotate-180">C</span>
+</div>
+</div>
+<h1 class="font-headline font-extrabold text-5xl tracking-tighter text-on-surface mt-6 drop-shadow-sm">
+                Card <span class="text-uno-red">Clash</span>
+</h1>
+<p class="font-body text-on-surface-variant font-medium max-w-[280px]">
+                The ultimate fast-paced arena for legendary tacticians.
+            </p>
+</div>
+<!-- Input & Action Section -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-2xl shadow-on-surface/10 space-y-8 border border-surface-variant">
+<div class="space-y-3">
+<label class="font-headline font-extrabold text-xs uppercase tracking-[0.2em] text-on-surface-variant ml-2" for="player-name">
+                    Identify Yourself
+                </label>
+<div class="relative group">
+<input class="w-full bg-surface-container-high border-2 border-transparent h-16 px-6 rounded-2xl font-headline font-bold text-lg focus:ring-0 focus:border-uno-blue focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant outline-none" id="player-name" placeholder="WildPlayer_99" type="text"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 text-uno-blue">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">style</span>
+</div>
+</div>
+</div>
+<!-- Primary Action Button (Bolder Game Style) -->
+<button class="w-full bg-uno-red text-white h-20 py-5 rounded-2xl font-headline font-black text-2xl shadow-[0_8px_0_0_#b31b25] hover:shadow-[0_4px_0_0_#b31b25] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-3 border-4 border-white/20">
+                PLAY
+                <span class="material-symbols-outlined font-black text-3xl">play_arrow</span>
+</button>
+</div>
+<!-- Social/Status Footer -->
+<div class="flex justify-center items-center gap-6">
+<div class="flex -space-x-3">
+<div class="w-11 h-11 rounded-full border-4 border-white bg-uno-blue flex items-center justify-center overflow-hidden shadow-md">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvDrTmqBFOvEQY1Tql36A5vCpAtcEEvcOVj7fmC-KIxe1_sfc_VI9X38_f7USgv5hTeacB56a_Pa16lkNLrScSlpkARXMK-r88ssKY9_9Zg-4MV1TWK2h1hCgRfjuR9nCnYNRWTsCe1tVA8e8lP0PGVobiOtikawTeKzkDB_-VDPkmVW4HAUuSE8INXhZlh6uMrz5UuzUjXpUx6_IfbukflWYPIaFaNGZYNBV0_TFFgbQgBdlvmnvJIFnggzgdaKkdGq3wdfbHGU0"/>
+</div>
+<div class="w-11 h-11 rounded-full border-4 border-white bg-uno-green flex items-center justify-center overflow-hidden shadow-md">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyzmDZHTxwUR8EoJ57DHH4T28vr8kNBeLosuW-NtEAXMHipZlp3l2jEetbb8QyKQSC9-fhw73pV1UH0J_qmRfzbTJsTbDTWlz5xJan9JNvZeEHYQ9WF8UXD7crbtRlxctLO4P0WxKHR8miepTnmq79GbkJEL1skli1LuttcB-xmL7y23qTNv_c9disaIG0KO1CDcPDwN9zjo8dxu8Ofdqikp5Po5zP4OcTE_wvbLPR8qkTyEMvDwluCpqo4i0qFoRgh7zadXoXJZk"/>
+</div>
+<div class="w-11 h-11 rounded-full border-4 border-white bg-uno-yellow flex items-center justify-center overflow-hidden shadow-md">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu0vxGwhkS0I-LdgRK7l86RpJoAAu_rMztlamG0wv4TXf15fTd8yPff9fyxvl_zZDBiIiT5Q2IhD2c9wW9lr3dsgIFCc2mfXRvMoDfbG2gFgpOoeHDF9XykBFsh4SBBr-7Nh0ET8feXbiznfaC2okPsJc4FhswquHBtHFcuDDUBVs7tDYKTMWL-i3WFiUzmzf0enkv8QZz2Nr6GilsoitDd7J4mxP_yZEpgzKN6G3LTZQzL25otEjdUPn9lM10ADuIsyk8lVTZw0I"/>
+</div>
+</div>
+<p class="text-sm font-bold text-on-surface-variant flex items-center gap-2">
+<span class="w-2.5 h-2.5 bg-uno-green rounded-full animate-pulse shadow-[0_0_8px_rgba(85,170,85,0.8)]"></span>
+                1,240 wild players
+            </p>
+</div>
+</div>
+<!-- Background Decoration: Floating Uno Cards -->
+<div class="hidden lg:block absolute left-24 top-1/4 -rotate-12 opacity-30 scale-125">
+<div class="w-40 h-56 bg-uno-green uno-card-shape border-8 border-white flex items-center justify-center">
+<div class="uno-inner-oval"></div>
+<span class="uno-number text-uno-green text-7xl z-10">4</span>
+<span class="absolute top-2 left-2 text-white uno-number text-2xl">4</span>
+<span class="absolute bottom-2 right-2 text-white uno-number text-2xl rotate-180">4</span>
+</div>
+</div>
+<div class="hidden lg:block absolute right-28 bottom-1/4 rotate-6 opacity-30 scale-110">
+<div class="w-40 h-56 bg-uno-blue uno-card-shape border-8 border-white flex items-center justify-center">
+<div class="uno-inner-oval"></div>
+<span class="uno-number text-uno-blue text-7xl z-10">9</span>
+<span class="absolute top-2 left-2 text-white uno-number text-2xl">9</span>
+<span class="absolute bottom-2 right-2 text-white uno-number text-2xl rotate-180">9</span>
+</div>
+</div>
+</main>
+<!-- Toast/Notification Overlay (Uno Match Found) -->
+<div class="fixed top-8 left-1/2 -translate-x-1/2 bg-uno-black text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 z-[100] scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all border-2 border-white/20">
+<div class="w-4 h-4 bg-uno-yellow rounded-full animate-bounce"></div>
+<span class="text-sm font-headline font-black tracking-widest uppercase">Challenge Accepted!</span>
+</div>
+</body></html>

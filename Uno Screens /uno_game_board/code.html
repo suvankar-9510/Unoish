@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Battle Arena - Game Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "uno-red": "#ff5555",
+              "uno-blue": "#5555ff",
+              "uno-green": "#55aa55",
+              "uno-yellow": "#ffaa00",
+              "uno-black": "#000000",
+              "on-secondary-fixed": "#003076",
+              "surface-variant": "#dbdde0",
+              "secondary-container": "#c0d1ff",
+              "on-primary-fixed-variant": "#5a0f00",
+              "tertiary-dim": "#005c2b",
+              "surface-container-low": "#f0f1f3",
+              "on-primary": "#ffefec",
+              "inverse-on-surface": "#9c9d9f",
+              "surface-bright": "#f6f6f8",
+              "tertiary-container": "#3fff8b",
+              "on-primary-fixed": "#000000",
+              "error-dim": "#9f0519",
+              "surface-tint": "#af2700",
+              "on-tertiary-fixed": "#004820",
+              "primary-fixed-dim": "#ff5c34",
+              "surface-container-highest": "#dbdde0",
+              "secondary-dim": "#004aad",
+              "tertiary-fixed": "#3fff8b",
+              "on-surface": "#2d2f31",
+              "outline": "#757779",
+              "on-tertiary": "#cdffd3",
+              "tertiary": "#006a33",
+              "surface-dim": "#d2d4d8",
+              "primary-container": "#ff7856",
+              "surface-container-high": "#e1e2e5",
+              "outline-variant": "#acadaf",
+              "surface-container": "#e7e8ea",
+              "on-secondary-fixed-variant": "#004baf",
+              "error-container": "#fb5151",
+              "on-error": "#ffefee",
+              "on-tertiary-fixed-variant": "#006832",
+              "on-primary-container": "#490b00",
+              "error": "#b31b25",
+              "on-surface-variant": "#5a5c5d",
+              "tertiary-fixed-dim": "#24f07e",
+              "surface": "#f6f6f8",
+              "secondary-fixed": "#c0d1ff",
+              "on-error-container": "#570008",
+              "primary-fixed": "#ff7856",
+              "on-secondary-container": "#00429c",
+              "secondary-fixed-dim": "#acc3ff",
+              "secondary": "#0055c4",
+              "on-secondary": "#f0f2ff",
+              "background": "#f6f6f8",
+              "surface-container-lowest": "#ffffff",
+              "primary": "#af2700",
+              "inverse-surface": "#0c0e10",
+              "primary-dim": "#9a2100",
+              "on-background": "#2d2f31",
+              "on-tertiary-container": "#005d2c",
+              "inverse-primary": "#ff562c"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Be Vietnam Pro"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .card-fan > div:nth-child(1) { transform: rotate(-15deg) translateY(10px); }
+        .card-fan > div:nth-child(2) { transform: rotate(-10deg) translateY(2px); }
+        .card-fan > div:nth-child(3) { transform: rotate(-5deg) translateY(-2px); }
+        .card-fan > div:nth-child(4) { transform: rotate(0deg) translateY(-5px); }
+        .card-fan > div:nth-child(5) { transform: rotate(5deg) translateY(-2px); }
+        .card-fan > div:nth-child(6) { transform: rotate(10deg) translateY(2px); }
+        .card-fan > div:nth-child(7) { transform: rotate(15deg) translateY(10px); }
+        
+        .glow-active {
+            box-shadow: 0 0 25px 4px rgba(85, 170, 85, 0.6);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .uno-oval {
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+
+        .arena-bg {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1a 100%);
+        }
+        
+        .table-glow {
+            background: radial-gradient(circle at center, rgba(85, 85, 255, 0.1) 0%, transparent 70%);
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.2; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        .pulse-ring {
+            animation: pulse-ring 3s ease-in-out infinite;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="arena-bg font-body text-white overflow-hidden h-screen flex flex-col">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-black/40 backdrop-blur-xl rounded-b-3xl shadow-2xl">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-uno-red flex items-center justify-center overflow-hidden border-2 border-white/20">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmk1tP4Tv39_-18YqVasM_Qr5OxPDtZ1LyPKVNY9T1aW2NKtQaOyt3MiN6WfvPevCZYeji5KpR_SC7EBIBaNupFJE5lOAo_NPL4i7zIg70IhPiWbATHAA9-eHy9elRtn2t9bUPlZBGzkc6Xc5upZrniTRVmo3oNii23ON7hlFXQcAxAi_xPrMLWGxfHIPXlAUKsrCBxkbE89Uc2QwFXgO7bhz6lAjHz4-LSDDfGJTcrkCF-kNCMSkTVwrc5N-4x-aSsUVqqOk5db0"/>
+</div>
+<span class="text-xl font-black text-white font-headline tracking-tight uppercase">Battle Arena</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full border border-white/10">
+<span class="material-symbols-outlined text-sm text-uno-yellow">payments</span>
+<span class="font-label font-bold text-xs uppercase tracking-wider">1,240</span>
+</div>
+<span class="material-symbols-outlined text-white/60 hover:text-white transition-colors cursor-pointer">settings</span>
+</div>
+</header>
+<!-- Main Game Board Canvas -->
+<main class="flex-1 relative mt-20 mb-24 px-6 overflow-hidden">
+<div class="absolute inset-0 table-glow pointer-events-none"></div>
+<!-- Other Players -->
+<div class="absolute top-4 left-1/2 -translate-x-1/2 flex gap-8">
+<!-- Player 2 (Opponent Top) -->
+<div class="flex flex-col items-center gap-2">
+<div class="relative w-16 h-16 rounded-full p-1 bg-white/10 border-2 border-transparent">
+<img alt="Alex" class="rounded-full w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC58K4AsjuzVXLkABkEcsC47T9Ri9Rbt-VWE2yIEMy_mSKPMgme5ERjCyXLrezc_OHUDIuFCtSfpaY6kS7JpJInEktHSgRdbcyQ1nqQmr3SFHvHtkmUn9_01l_8trhvZcpTYIh03si2ix28fIfuaA6QltFcLwns51B1N3tVRsttdcL0sRY1EY2upbC9zJEIg0gbRpTxjmbZbYRPlauqqqOgO-sviFjrmpJX0VPtU2Gan3F2fea4DQEkN-NqdutbqoTfOhceFqg84r4"/>
+<div class="absolute -bottom-2 -right-2 bg-uno-red text-white text-[10px] font-black w-7 h-7 flex items-center justify-center rounded-full border-2 border-white shadow-lg">12</div>
+</div>
+<span class="font-label font-bold text-xs uppercase tracking-widest text-white/70">Alex</span>
+</div>
+</div>
+<!-- Left Player -->
+<div class="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 z-10">
+<div class="relative w-16 h-16 rounded-full p-1 bg-uno-green/20 glow-active border-2 border-uno-green pulse-ring"></div>
+<div class="absolute top-1 left-1 w-14 h-14 rounded-full overflow-hidden">
+<img alt="Sam" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdrhrBAsWlUUBqfcSgaX2vPFSzQ_x3RiS2ImK-Sqir0EurfVhsjzZF07D8iZb6K0ECrUbPFvObDbwJc31cUo86pOFYG1VH59VRBImrvRSKIgF-5_PmzjgqJITQoYZ_fBHkzjRro25GXPWHKmuYE1NVtdlt5CO3yB__F0NzmIKD6iyNRY0ziozd6uLf-hkTjCcDxAPN4ABidjOAk9ajmcRJtVLRlqspbx6LYtv2NkltPAp9SPFaeKiru8MjZtax6cnLg52G0OZIiAA"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-uno-green text-white text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full border-2 border-white shadow-lg">3</div>
+<span class="font-label font-black text-[10px] text-uno-green uppercase tracking-tighter mt-1">Sam's Turn</span>
+</div>
+<!-- Right Player -->
+<div class="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
+<div class="relative w-16 h-16 rounded-full p-1 bg-white/10 border-2 border-transparent">
+<img alt="Jordan" class="rounded-full w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAak1XBT7m3m9GyHRDv2rsMI7uAsNNxUHyCOei1ikID-apxiYUEtVrYvyGX8tv_DAMLqhEJ13vzDrYvQlSrwfPAJX3RMb-v8snMaIAdE5FNzHA07qLwicPPZua5Yn9jkjyJFZP4TNxRiTweAQp6sUcevx6POoiq8jC-CZk7lv_jI9UQ5ZH1lUChA4qsa4D4jyhapgculWLCuQAlfJGIp8xTJCQaIdtmTHTraKw4ifyqO4hRPFcoxUMFLX01DAmmthRzVaRg6KRJeLI"/>
+<div class="absolute -bottom-2 -right-2 bg-uno-yellow text-white text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full border-2 border-white shadow-lg text-uno-black">5</div>
+</div>
+<span class="font-label font-bold text-xs uppercase tracking-widest text-white/70">Jordan</span>
+</div>
+<!-- Center Stage: Play Area -->
+<div class="h-full flex items-center justify-center">
+<div class="relative w-full max-w-sm aspect-square flex items-center justify-center">
+<!-- Circular Orbit -->
+<div class="absolute inset-0 border-[3px] border-dashed border-white/5 rounded-full pulse-ring"></div>
+<!-- Active Color Indicator -->
+<div class="absolute inset-0 border-[8px] border-uno-blue/30 rounded-full"></div>
+<!-- Direction Indicator -->
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 text-uno-blue drop-shadow-[0_0_10px_rgba(85,85,255,0.8)]">
+<span class="material-symbols-outlined text-5xl animate-bounce">sync</span>
+</div>
+<!-- Pile Layout -->
+<div class="flex gap-4 items-center z-10">
+<!-- Draw Pile (Uno Back) -->
+<div class="relative w-28 h-40 bg-uno-black rounded-xl shadow-2xl flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform border-4 border-white">
+<div class="absolute inset-0 bg-uno-black flex items-center justify-center">
+<div class="w-24 h-32 bg-uno-red uno-oval border-4 border-uno-yellow flex items-center justify-center">
+<span class="font-black text-3xl text-white -rotate-12 tracking-tighter">UNO</span>
+</div>
+</div>
+<!-- Stack effect -->
+<div class="absolute -bottom-1 -right-1 w-full h-full bg-white/20 rounded-xl -z-10 translate-x-1 translate-y-1"></div>
+</div>
+<!-- Discard Pile (Active: Blue 7) -->
+<div class="relative w-28 h-40 bg-uno-blue rounded-xl shadow-[0_0_40px_rgba(85,85,255,0.4)] flex flex-col items-center justify-between p-2 border-4 border-white transition-all transform hover:rotate-1">
+<div class="w-full flex justify-start pl-1">
+<span class="font-headline font-black text-xl text-white">7</span>
+</div>
+<div class="absolute inset-2 bg-white uno-oval flex items-center justify-center">
+<span class="font-headline font-black text-5xl text-uno-blue rotate-[30deg]">7</span>
+</div>
+<div class="w-full flex justify-end pr-1 rotate-180">
+<span class="font-headline font-black text-xl text-white">7</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Player Hand (Uno Fanned Bottom) -->
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4">
+<div class="card-fan flex justify-center -space-x-14">
+<!-- Red 3 -->
+<div class="w-24 h-36 bg-uno-red rounded-xl shadow-2xl flex flex-col p-2 border-2 border-white hover:-translate-y-10 transition-all cursor-pointer group">
+<span class="font-headline font-black text-lg text-white">3</span>
+<div class="flex-1 flex items-center justify-center">
+<div class="w-16 h-20 bg-white uno-oval flex items-center justify-center">
+<span class="font-black text-3xl text-uno-red rotate-[30deg]">3</span>
+</div>
+</div>
+</div>
+<!-- Yellow Skip -->
+<div class="w-24 h-36 bg-uno-yellow rounded-xl shadow-2xl flex flex-col p-2 border-2 border-white hover:-translate-y-10 transition-all cursor-pointer group">
+<span class="material-symbols-outlined font-black text-lg text-uno-black" style="font-variation-settings: 'FILL' 1;">block</span>
+<div class="flex-1 flex items-center justify-center">
+<div class="w-16 h-20 bg-white uno-oval flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-uno-yellow rotate-[30deg]" style="font-variation-settings: 'FILL' 1;">block</span>
+</div>
+</div>
+</div>
+<!-- Green 9 -->
+<div class="w-24 h-36 bg-uno-green rounded-xl shadow-2xl flex flex-col p-2 border-2 border-white hover:-translate-y-10 transition-all cursor-pointer group">
+<span class="font-headline font-black text-lg text-white">9</span>
+<div class="flex-1 flex items-center justify-center">
+<div class="w-16 h-20 bg-white uno-oval flex items-center justify-center">
+<span class="font-black text-3xl text-uno-green rotate-[30deg]">9</span>
+</div>
+</div>
+</div>
+<!-- Active Selected: Blue 7 (Match) -->
+<div class="w-28 h-40 bg-uno-blue rounded-xl shadow-[0_0_30px_rgba(255,255,255,0.6)] flex flex-col p-2 border-4 border-white -translate-y-14 scale-110 z-30 transition-all cursor-pointer ring-4 ring-uno-blue/50">
+<span class="font-headline font-black text-xl text-white">7</span>
+<div class="flex-1 flex items-center justify-center">
+<div class="w-20 h-24 bg-white uno-oval flex items-center justify-center">
+<span class="font-black text-4xl text-uno-blue rotate-[30deg]">7</span>
+</div>
+</div>
+<div class="bg-white/90 rounded-full py-0.5 text-center mt-1 shadow-lg">
+<span class="text-[9px] font-black uppercase text-uno-blue">PLAY!</span>
+</div>
+</div>
+<!-- Wild Card -->
+<div class="w-24 h-36 bg-uno-black rounded-xl shadow-2xl flex flex-col p-1 border-2 border-white hover:-translate-y-10 transition-all cursor-pointer group overflow-hidden">
+<div class="flex-1 relative flex items-center justify-center">
+<div class="absolute inset-0 grid grid-cols-2 grid-rows-2">
+<div class="bg-uno-red"></div>
+<div class="bg-uno-blue"></div>
+<div class="bg-uno-yellow"></div>
+<div class="bg-uno-green"></div>
+</div>
+<div class="relative w-16 h-20 bg-uno-black uno-oval border-2 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl rotate-[30deg]" style="font-variation-settings: 'FILL' 1;">auto_fix_high</span>
+</div>
+</div>
+</div>
+<!-- Blue Draw Two -->
+<div class="w-24 h-36 bg-uno-blue rounded-xl shadow-2xl flex flex-col p-2 border-2 border-white hover:-translate-y-10 transition-all cursor-pointer group">
+<span class="font-black text-sm text-white">+2</span>
+<div class="flex-1 flex items-center justify-center">
+<div class="w-16 h-20 bg-white uno-oval flex flex-col items-center justify-center rotate-[30deg]">
+<div class="w-6 h-10 bg-uno-blue border border-white rounded-sm -mb-4 -mr-2"></div>
+<div class="w-6 h-10 bg-uno-blue border border-white rounded-sm"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-black/60 backdrop-blur-2xl rounded-t-[3rem] border-t border-white/10">
+<div class="flex flex-col items-center justify-center bg-uno-red text-white rounded-full px-6 py-2 scale-110 font-label font-black text-[10px] uppercase tracking-widest shadow-[0_0_20px_rgba(255,85,85,0.4)]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">playing_cards</span>
+<span>Play</span>
+</div>
+<div class="flex flex-col items-center justify-center text-white/40 px-4 py-2 hover:text-uno-yellow transition-colors font-label font-bold text-[10px] uppercase tracking-widest">
+<span class="material-symbols-outlined">style</span>
+<span>Deck</span>
+</div>
+<div class="flex flex-col items-center justify-center text-white/40 px-4 py-2 hover:text-uno-blue transition-colors font-label font-bold text-[10px] uppercase tracking-widest">
+<span class="material-symbols-outlined">group</span>
+<span>Chat</span>
+</div>
+<div class="flex flex-col items-center justify-center text-white/40 px-4 py-2 hover:text-uno-green transition-colors font-label font-bold text-[10px] uppercase tracking-widest">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span>Shop</span>
+</div>
+</nav>
+<!-- Dynamic Turn Overlay -->
+<div class="fixed bottom-28 left-6 right-6 flex justify-center pointer-events-none">
+<div class="bg-uno-green/20 backdrop-blur-xl px-6 py-3 rounded-full shadow-2xl border border-uno-green/50 flex items-center gap-3">
+<div class="w-2.5 h-2.5 rounded-full bg-uno-green animate-ping shadow-[0_0_10px_#55aa55]"></div>
+<p class="font-label font-black text-xs text-uno-green uppercase tracking-wider">Sam is choosing a card...</p>
+</div>
+</div>
+</body></html>

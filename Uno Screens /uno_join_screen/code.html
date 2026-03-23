@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Battle Arena - Join Game</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "uno-red": "#EB1C24",
+              "uno-yellow": "#FFD800",
+              "uno-blue": "#00A2E8",
+              "uno-green": "#22B14C",
+              "on-secondary-fixed": "#003076",
+              "surface-variant": "#dbdde0",
+              "secondary-container": "#c0d1ff",
+              "on-primary-fixed-variant": "#5a0f00",
+              "tertiary-dim": "#005c2b",
+              "surface-container-low": "#f0f1f3",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#9c9d9f",
+              "surface-bright": "#f6f6f8",
+              "tertiary-container": "#3fff8b",
+              "on-primary-fixed": "#000000",
+              "error-dim": "#9f0519",
+              "surface-tint": "#EB1C24",
+              "on-tertiary-fixed": "#004820",
+              "primary-fixed-dim": "#ff5c34",
+              "surface-container-highest": "#dbdde0",
+              "secondary-dim": "#004aad",
+              "tertiary-fixed": "#3fff8b",
+              "on-surface": "#231F20",
+              "outline": "#757779",
+              "on-tertiary": "#cdffd3",
+              "tertiary": "#22B14C",
+              "surface-dim": "#d2d4d8",
+              "primary-container": "#FFD800",
+              "surface-container-high": "#e1e2e5",
+              "outline-variant": "#acadaf",
+              "surface-container": "#e7e8ea",
+              "on-secondary-fixed-variant": "#004baf",
+              "error-container": "#fb5151",
+              "on-error": "#ffefee",
+              "on-tertiary-fixed-variant": "#006832",
+              "on-primary-container": "#490b00",
+              "error": "#b31b25",
+              "on-surface-variant": "#5a5c5d",
+              "tertiary-fixed-dim": "#24f07e",
+              "surface": "#f6f6f8",
+              "secondary-fixed": "#c0d1ff",
+              "on-error-container": "#570008",
+              "primary-fixed": "#ff7856",
+              "on-secondary-container": "#00429c",
+              "secondary-fixed-dim": "#acc3ff",
+              "secondary": "#00A2E8",
+              "on-secondary": "#ffffff",
+              "background": "#f6f6f8",
+              "surface-container-lowest": "#ffffff",
+              "primary": "#EB1C24",
+              "inverse-surface": "#0c0e10",
+              "primary-dim": "#C1121F",
+              "on-background": "#231F20",
+              "on-tertiary-container": "#005d2c",
+              "inverse-primary": "#ff562c"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Be Vietnam Pro"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(24px);
+      }
+      .uno-gradient-bg {
+        background: linear-gradient(135deg, #EB1C24 0%, #FFD800 100%);
+      }
+      .card-motif-bg {
+        background-color: #f6f6f8;
+        background-image: radial-gradient(#dbdde0 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+      .ambient-shadow {
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+      }
+      .uno-header-text {
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+      }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface min-h-screen flex flex-col overflow-hidden">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-white/90 backdrop-blur-xl shadow-lg shadow-black/5 rounded-b-3xl">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-uno-yellow flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="Stylized character avatar for player profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6VaW7zy5KNDkwHZa1bFZv-nXFRFzMHdmN322LLyxSk2uekY3q_zbP7GESMsYTfJ7ZAe_tWsK4PCXDNAoBYa529_S2GqdRQ0tcwafmXDq5zJopldKlXrkrMlfFkB86K9eO9wG8hcnpoHGuRucIdsx2ogGmhAq8coy1M9BPuyr-8cQp5DvkPVVapG86K62O95trTsK3a_VOqBcWjyGsZy2P3-cDZVAmLRwmRnpMYwJhWVIWHoAnk6-__h8PucC3izKeYkaGG8f5Kac"/>
+</div>
+<span class="font-headline font-extrabold tracking-tight text-xl text-uno-red uno-header-text">Battle Arena</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-container-high text-on-surface-variant hover:scale-105 active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Main Content Area (The Playroom) -->
+<main class="flex-1 flex flex-col items-center justify-center px-6 relative uno-gradient-bg">
+<!-- Uno Inspired Shapes -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-10 -left-10 w-64 h-64 bg-uno-blue/20 rounded-full blur-3xl"></div>
+<div class="absolute top-1/2 -right-20 w-80 h-80 bg-uno-green/20 rounded-full blur-3xl"></div>
+<!-- Card Silhouettes -->
+<div class="absolute top-[15%] -left-16 w-40 h-60 bg-white/10 rounded-2xl rotate-[25deg] border border-white/20"></div>
+<div class="absolute bottom-[5%] -right-16 w-44 h-64 bg-white/10 rounded-2xl rotate-[-15deg] border border-white/20"></div>
+</div>
+<!-- Join Arena Card -->
+<div class="w-full max-w-md z-10">
+<div class="glass-card p-8 rounded-3xl ambient-shadow flex flex-col gap-8 relative overflow-hidden border border-white/40">
+<!-- Color Bar Accent -->
+<div class="absolute top-0 left-0 w-full h-2 flex">
+<div class="flex-1 bg-uno-red"></div>
+<div class="flex-1 bg-uno-yellow"></div>
+<div class="flex-1 bg-uno-green"></div>
+<div class="flex-1 bg-uno-blue"></div>
+</div>
+<div class="text-center space-y-2 pt-2">
+<h1 class="font-headline text-4xl font-black italic tracking-tighter text-uno-red uno-header-text uppercase">Wildcard Kinetic</h1>
+<p class="text-on-surface-variant font-semibold">Ready to enter the battle arena?</p>
+</div>
+<div class="space-y-6">
+<!-- Input Field -->
+<div class="space-y-2">
+<label class="block text-[10px] font-headline font-black uppercase tracking-[0.2em] text-uno-blue px-2" for="room-code">Enter Room Code</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-low border-2 border-transparent focus:border-uno-blue rounded-2xl px-6 py-5 text-2xl font-headline font-black text-center tracking-[0.2em] transition-all placeholder:text-outline-variant/50 placeholder:tracking-normal placeholder:font-bold outline-none" id="room-code" placeholder="____-____" type="text uppercase"/>
+<div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-uno-blue/30 group-focus-within:text-uno-blue transition-colors">
+<span class="material-symbols-outlined" data-icon="vpn_key">vpn_key</span>
+</div>
+</div>
+</div>
+<!-- Join Button -->
+<button class="w-full bg-uno-red hover:bg-red-600 text-white font-headline font-black text-xl py-5 rounded-2xl shadow-[0_8px_0_rgb(180,20,20)] hover:translate-y-[2px] hover:shadow-[0_6px_0_rgb(180,20,20)] active:translate-y-[6px] active:shadow-none transition-all flex items-center justify-center gap-3 uppercase tracking-wider">
+<span>Join Arena</span>
+<span class="material-symbols-outlined" data-icon="flash_on" style="font-variation-settings: 'FILL' 1;">flash_on</span>
+</button>
+</div>
+<!-- Secondary Options -->
+<div class="flex items-center justify-center gap-6 pt-2">
+<button class="text-uno-blue font-headline font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">
+                        Host Match
+                    </button>
+<div class="w-1.5 h-1.5 rounded-full bg-surface-variant"></div>
+<button class="text-on-surface-variant font-headline font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">
+                        Tutorial
+                    </button>
+</div>
+</div>
+<!-- Online Status Chip -->
+<div class="mt-8 flex justify-center">
+<div class="bg-white/90 backdrop-blur px-6 py-2.5 rounded-full ambient-shadow border border-white/50 flex items-center gap-3">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-uno-green opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-uno-green"></span>
+</span>
+<span class="text-[10px] font-headline font-black text-on-surface-variant uppercase tracking-widest">14,209 Players Battling Now</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.08)] rounded-t-[2.5rem] border-t border-surface-variant/20">
+<a class="flex flex-col items-center justify-center bg-uno-red/10 text-uno-red rounded-2xl px-6 py-2.5 scale-105" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="playing_cards" style="font-variation-settings: 'FILL' 1;">playing_cards</span>
+<span class="font-headline font-black text-[10px] uppercase tracking-widest mt-0.5">Play</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-uno-blue transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="style">style</span>
+<span class="font-headline font-black text-[10px] uppercase tracking-widest mt-0.5">Cards</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-uno-green transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-headline font-black text-[10px] uppercase tracking-widest mt-0.5">Social</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-uno-yellow transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-headline font-black text-[10px] uppercase tracking-widest mt-0.5">Shop</span>
+</a>
+</nav>
+</body></html>

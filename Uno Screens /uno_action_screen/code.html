@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Battle Arena - Wildcard Kinetic</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "uno-red": "#ff5555",
+              "uno-blue": "#5555ff",
+              "uno-yellow": "#ffaa00",
+              "uno-green": "#55aa55",
+              "uno-black": "#000000",
+              "on-secondary-fixed": "#003076",
+              "surface-variant": "#dbdde0",
+              "secondary-container": "#c0d1ff",
+              "on-primary-fixed-variant": "#5a0f00",
+              "tertiary-dim": "#005c2b",
+              "surface-container-low": "#f0f1f3",
+              "on-primary": "#ffefec",
+              "inverse-on-surface": "#9c9d9f",
+              "surface-bright": "#f6f6f8",
+              "tertiary-container": "#3fff8b",
+              "on-primary-fixed": "#000000",
+              "error-dim": "#9f0519",
+              "surface-tint": "#af2700",
+              "on-tertiary-fixed": "#004820",
+              "primary-fixed-dim": "#ff5c34",
+              "surface-container-highest": "#dbdde0",
+              "secondary-dim": "#004aad",
+              "tertiary-fixed": "#3fff8b",
+              "on-surface": "#2d2f31",
+              "outline": "#757779",
+              "on-tertiary": "#cdffd3",
+              "tertiary": "#006a33",
+              "surface-dim": "#d2d4d8",
+              "primary-container": "#ff7856",
+              "surface-container-high": "#e1e2e5",
+              "outline-variant": "#acadaf",
+              "surface-container": "#e7e8ea",
+              "on-secondary-fixed-variant": "#004baf",
+              "error-container": "#fb5151",
+              "on-error": "#ffefee",
+              "on-tertiary-fixed-variant": "#006832",
+              "on-primary-container": "#490b00",
+              "error": "#b31b25",
+              "on-surface-variant": "#5a5c5d",
+              "tertiary-fixed-dim": "#24f07e",
+              "surface": "#f6f6f8",
+              "secondary-fixed": "#c0d1ff",
+              "on-error-container": "#570008",
+              "primary-fixed": "#ff7856",
+              "on-secondary-container": "#00429c",
+              "secondary-fixed-dim": "#acc3ff",
+              "secondary": "#0055c4",
+              "on-secondary": "#f0f2ff",
+              "background": "#f6f6f8",
+              "surface-container-lowest": "#ffffff",
+              "primary": "#af2700",
+              "inverse-surface": "#0c0e10",
+              "primary-dim": "#9a2100",
+              "on-background": "#2d2f31",
+              "on-tertiary-container": "#005d2c",
+              "inverse-primary": "#ff562c"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Be Vietnam Pro"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .uno-card-shadow {
+        box-shadow: 0 10px 0 0 rgba(0,0,0,0.1);
+      }
+      .wild-gradient {
+        background: linear-gradient(135deg, #ff5555 25%, #ffaa00 25%, #ffaa00 50%, #55aa55 50%, #55aa55 75%, #5555ff 75%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.15));
+      }
+      .uno-oval {
+        border-radius: 50% / 10%;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar Section -->
+<header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-white/90 backdrop-blur-xl border-b border-surface-container-high shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-uno-red flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+<img alt="Player Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGvfwbib5rKPLXkIETM3OHWiPTkBumA3ksEkUs31-CTKP1GgQQJBt0wo4NpHKFowoNT9MLBfJEczfCkwS_BieAccOztl9x_lUak1IFJb-vL2tYOgSVlqCxTBSedasWDyFpUT2STRyTOhG7qV14nyB5BFzKc6lo16eBHECE7odNu6v-PcQHK6sGdUrifhttYQbSc2Q63mK9MrVc9yH6OLg3ioqV2EOWgt0n5-6nTOA8k6ow8AkRNCKM14Pcn4CUJQedaLeyO85rfa4"/>
+</div>
+<span class="text-xl font-black text-uno-black font-headline tracking-tight">Battle Arena</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:scale-110 transition-transform active:scale-95" data-icon="settings">settings</button>
+</div>
+</header>
+<main class="min-h-screen pt-28 pb-32 px-6 flex flex-col gap-8 max-w-2xl mx-auto">
+<!-- Welcome Section -->
+<section class="flex flex-col gap-1">
+<span class="text-on-surface-variant font-label font-bold uppercase tracking-widest text-[10px]">Your Deck is Ready</span>
+<h1 class="text-4xl font-headline font-black text-uno-black tracking-tight leading-tight">
+        Welcome, <br/><span class="wild-gradient text-5xl italic font-black uppercase">Wildcard Kinetic</span>
+</h1>
+</section>
+<!-- Dynamic Action Grid -->
+<div class="flex flex-col gap-6 relative">
+<!-- Create Game Card (Red Uno Style) -->
+<button class="group relative flex flex-col items-start p-8 bg-uno-red rounded-[2.5rem] shadow-xl hover:-translate-y-2 active:scale-[0.98] transition-all duration-300 overflow-hidden border-4 border-white uno-card-shadow">
+<div class="absolute -top-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+<div class="absolute top-4 right-4 text-white/20 select-none">
+<span class="text-8xl font-black font-headline italic">+2</span>
+</div>
+<div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-md transform -rotate-3 group-hover:rotate-0 transition-transform">
+<span class="material-symbols-outlined text-uno-red text-4xl font-black" data-icon="add_circle" style="font-variation-settings: 'FILL' 1, 'wght' 700;">add_circle</span>
+</div>
+<h2 class="text-3xl font-headline font-black text-white mb-2 uppercase tracking-tight">Create Game</h2>
+<p class="text-white/90 text-sm font-bold leading-relaxed max-w-[70%]">Host a private match and double the stakes with friends.</p>
+<div class="mt-8 flex items-center gap-2 bg-white text-uno-red px-5 py-2 rounded-full font-black font-label uppercase text-xs tracking-wider shadow-sm">
+<span>Start Lobby</span>
+<span class="material-symbols-outlined text-sm font-black" data-icon="play_arrow">play_arrow</span>
+</div>
+</button>
+<!-- Join Game Card (Blue Uno Style) -->
+<button class="group relative flex flex-col items-start p-8 bg-uno-blue rounded-[2.5rem] shadow-xl hover:-translate-y-2 active:scale-[0.98] transition-all duration-300 overflow-hidden border-4 border-white uno-card-shadow">
+<div class="absolute -bottom-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+<div class="absolute top-4 right-4 text-white/20 select-none">
+<span class="material-symbols-outlined text-8xl" data-icon="sync" style="font-variation-settings: 'wght' 900;">sync</span>
+</div>
+<div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-md transform rotate-3 group-hover:rotate-0 transition-transform">
+<span class="material-symbols-outlined text-uno-blue text-4xl font-black" data-icon="group" style="font-variation-settings: 'FILL' 1, 'wght' 700;">group</span>
+</div>
+<h2 class="text-3xl font-headline font-black text-white mb-2 uppercase tracking-tight">Join Game</h2>
+<p class="text-white/90 text-sm font-bold leading-relaxed max-w-[70%]">Jump into an active arena and reverse the flow of battle.</p>
+<div class="mt-8 flex items-center gap-2 bg-white text-uno-blue px-5 py-2 rounded-full font-black font-label uppercase text-xs tracking-wider shadow-sm">
+<span>Enter Match</span>
+<span class="material-symbols-outlined text-sm font-black" data-icon="login">login</span>
+</div>
+</button>
+</div>
+<!-- Secondary Actions (Green & Yellow) -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-uno-green p-6 rounded-[2rem] border-4 border-white shadow-lg flex flex-col gap-2 relative overflow-hidden">
+<span class="text-[10px] font-black uppercase tracking-widest text-white/80 z-10">Active Players</span>
+<div class="flex items-center gap-2 z-10">
+<span class="text-2xl font-headline font-black text-white">12,482</span>
+</div>
+<div class="absolute -bottom-4 -right-4 material-symbols-outlined text-6xl text-white/10" data-icon="groups">groups</div>
+</div>
+<div class="bg-uno-yellow p-6 rounded-[2rem] border-4 border-white shadow-lg flex flex-col gap-2 relative overflow-hidden">
+<span class="text-[10px] font-black uppercase tracking-widest text-black/60 z-10">Current Rank</span>
+<div class="flex items-center gap-2 z-10">
+<span class="text-2xl font-headline font-black text-uno-black">Platinum III</span>
+</div>
+<div class="absolute -bottom-4 -right-4 material-symbols-outlined text-6xl text-black/5" data-icon="military_tech">military_tech</div>
+</div>
+</div>
+<!-- Live Feed -->
+<div class="bg-surface-container-lowest rounded-[2.5rem] p-8 border-2 border-surface-container shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline font-black text-uno-black uppercase tracking-tight">Live Arena Feed</h3>
+<span class="text-[10px] font-black font-label text-uno-red uppercase border-b-2 border-uno-red pb-0.5">View All</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-surface rounded-2xl border border-surface-container transition-colors hover:border-uno-blue/30 cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-uno-red flex items-center justify-center text-white text-xs font-black">S</div>
+<div>
+<p class="text-sm font-black text-uno-black">ShadowCaster vs NeonDrake</p>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Round 4 • High Stakes</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-xl" data-icon="visibility">visibility</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface rounded-2xl border border-surface-container transition-colors hover:border-uno-green/30 cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-uno-green flex items-center justify-center text-white text-xs font-black">T</div>
+<div>
+<p class="text-sm font-black text-uno-black">Tournament Lobby #882</p>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Starting in 2 mins</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-xl" data-icon="groups">groups</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Section -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-white/95 backdrop-blur-md rounded-t-[3rem] border-t-2 border-surface-container-high">
+<!-- Play Tab (Active) -->
+<button class="flex flex-col items-center justify-center bg-uno-red text-white rounded-[1.5rem] px-8 py-3 scale-105 shadow-lg shadow-uno-red/20 transition-all active:scale-95">
+<span class="material-symbols-outlined text-2xl" data-icon="playing_cards" style="font-variation-settings: 'FILL' 1;">playing_cards</span>
+<span class="font-headline font-black text-[10px] uppercase tracking-widest mt-1">Play</span>
+</button>
+<!-- Cards Tab -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:text-uno-blue transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="style">style</span>
+<span class="font-headline font-black text-[10px] uppercase tracking-widest mt-1">Deck</span>
+</button>
+<!-- Social Tab -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:text-uno-green transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="group">group</span>
+<span class="font-headline font-black text-[10px] uppercase tracking-widest mt-1">Buddies</span>
+</button>
+<!-- Shop Tab -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:text-uno-yellow transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="payments">payments</span>
+<span class="font-headline font-black text-[10px] uppercase tracking-widest mt-1">Store</span>
+</button>
+</nav>
+<!-- Background Elements -->
+<div class="fixed top-20 -left-10 w-64 h-64 bg-uno-red/5 rounded-full blur-[80px] -z-20 pointer-events-none"></div>
+<div class="fixed bottom-40 -right-10 w-64 h-64 bg-uno-blue/5 rounded-full blur-[80px] -z-20 pointer-events-none"></div>
+</body></html>

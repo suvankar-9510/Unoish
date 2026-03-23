@@ -238,6 +238,12 @@ io.on('connection', (socket) => {
       io.to(roomId).emit('player_punished', { victimId: nextPlayer.id, amount: drawAmount });
       
       for (let i = 0; i < drawAmount; i++) {
+        if (room.deck.length === 0 && room.discardPile.length > 1) {
+           const topC = room.discardPile.pop();
+           room.deck = room.discardPile.sort(() => Math.random() - 0.5);
+           room.discardPile = [topC];
+           room.deck.forEach(c => delete c.declaredColor);
+        }
         if (room.deck.length > 0) nextPlayer.hand.push(room.deck.pop());
       }
     }
@@ -280,10 +286,19 @@ io.on('connection', (socket) => {
        }
        if (room.deck.length > 0) {
          room.players[room.currentPlayerIndex].hand.push(room.deck.pop());
-         let idx = (room.currentPlayerIndex + room.direction) % room.players.length;
-         if (idx < 0) idx += room.players.length;
-         room.currentPlayerIndex = idx;
-
+         
+         const activeCount = room.players.filter(p => !p.finishedRank).length;
+         const getNextPlayerIndex = (startIdx) => {
+           let idx = startIdx;
+           if (activeCount === 0) return idx;
+           do {
+             idx = (idx + room.direction) % room.players.length;
+             if (idx < 0) idx += room.players.length;
+           } while (room.players[idx].finishedRank);
+           return idx;
+         };
+         
+         room.currentPlayerIndex = getNextPlayerIndex(room.currentPlayerIndex);
          startTurnTimer(roomId);
        }
     }
@@ -366,7 +381,7 @@ io.on('connection', (socket) => {
                 io.to(roomId).emit('player_left', player.name + ' abandoned the match. AI took over!');
                 io.to(roomId).emit('game_update', room);
                 if (room.currentPlayerIndex === playerIndex && !player.finishedRank) {
-                  setTimeout(() => playBotTurn(room), 1000);
+                  startTurnTimer(roomId);
                 }
                 
                 if (room.players.every(p => p.isBot)) rooms.delete(roomId);
@@ -391,7 +406,7 @@ io.on('connection', (socket) => {
              io.to(roomId).emit('game_update', room);
              // If it was exactly their turn, trigger the AI instantly
              if (room.currentPlayerIndex === playerIndex && !player.finishedRank) {
-               setTimeout(() => playBotTurn(room), 1000);
+               startTurnTimer(roomId);
              }
           }
         } else {

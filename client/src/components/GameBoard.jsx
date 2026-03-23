@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../store/gameStore';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function TurnTimer({ turnStartTime, turnDuration }) {
   const [timeLeft, setTimeLeft] = useState(turnDuration / 1000);
@@ -222,14 +223,17 @@ export default function GameBoard() {
 
               {/* Discard Pile History (Top 5 cards) */}
               <div className="relative w-[6.5rem] h-36 shrink-0">
+                <AnimatePresence>
                 {gameState.discardPile.slice(-5).map((dc, idx, arr) => {
                   const isTop = idx === arr.length - 1;
                   return (
-                    <div 
+                    <motion.div 
                       key={dc.id} 
-                      className={`absolute inset-0 ${getCardBgColor(dc.declaredColor || dc.color)} rounded-[14px] ${isTop ? 'shadow-[0_0_50px_rgba(255,255,255,0.4)]' : 'shadow-xl'} flex flex-col justify-between p-2 border-[3px] border-white/90 transition-all`}
+                      initial={isTop ? { scale: 1.5, rotate: Math.random() * 60 - 30, opacity: 0, y: -100 } : false}
+                      animate={{ scale: 1, rotate: isTop ? 1 : -6 + (idx * 3), y: -idx * 3, x: idx * 4, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                      className={`absolute inset-0 ${getCardBgColor(dc.declaredColor || dc.color)} rounded-[14px] ${isTop ? 'shadow-[0_0_50px_rgba(255,255,255,0.4)]' : 'shadow-xl'} flex flex-col justify-between p-2 border-[3px] border-white/90`}
                       style={{ 
-                        transform: `rotate(${isTop ? 1 : -6 + (idx * 3)}deg) translate(${idx * 4}px, -${idx * 3}px)`,
                         zIndex: 10 + idx
                       }}
                     >
@@ -259,9 +263,10 @@ export default function GameBoard() {
                             <div className="bg-uno-yellow"></div><div className="bg-uno-green"></div>
                          </div>
                       )}
-                    </div>
+                    </motion.div>
                   );
                 })}
+                </AnimatePresence>
               </div>
             </div>
           </div>
@@ -269,10 +274,12 @@ export default function GameBoard() {
 
         {/* Player Hand */}
         <div className="absolute bottom-[-50px] md:bottom-[-60px] left-1/2 -translate-x-1/2 w-[100vw] max-w-6xl px-2 md:px-4 overflow-x-auto no-scrollbar pt-10 pb-16 md:pb-8 transition-transform duration-500 origin-bottom flex justify-center">
-          <div 
+          <motion.div 
+             layout
              className={`flex justify-center min-w-max pb-8 shrink-0 transition-transform origin-bottom duration-500 will-change-transform ${!isMyTurn || myPlayer?.finishedRank ? 'scale-[0.55] sm:scale-75 translate-y-[40px] md:translate-y-24 opacity-60' : 'scale-[0.70] sm:scale-95 opacity-100 hover:translate-y-[-10px] md:hover:translate-y-[-20px]'}`}
              style={{ marginLeft: `${myPlayer?.hand.length > 5 ? Math.max(0, (myPlayer.hand.length - 5) * 15) : 0}px` }}
           >
+            <AnimatePresence mode="popLayout">
             {myPlayer?.hand?.map((card, i) => {
               const baseBg = getCardBgColor(card.color);
               const textC = getCardTextColor(card.color);
@@ -280,15 +287,19 @@ export default function GameBoard() {
               const canPlay = isMyTurn && !myPlayer.finishedRank && (card.color === topCard.color || card.value === topCard.value || card.type === 'wild' || (topCard.declaredColor === card.color));
               
               return (
-                <div 
+                <motion.div 
+                  layout
+                  initial={{ y: 200, opacity: 0, scale: 0.5 }}
+                  animate={{ y: Math.abs(i - myPlayer.hand.length/2) * 2, opacity: 1, scale: 1, rotate: (i - myPlayer.hand.length/2) * 5 }}
+                  exit={{ y: -300, scale: 1.5, opacity: 0, rotate: Math.random() * 45 - 20 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   key={card.id} 
                   onClick={() => handleCardClick(card)}
-                  className={`relative w-[6.5rem] h-36 shrink-0 rounded-[14px] flex flex-col justify-between p-2 border-[3px] border-white/90 shadow-[0_15px_30px_rgba(0,0,0,0.6)] cursor-pointer group transition-transform duration-300 -ml-8 md:-ml-10
+                  className={`relative w-[6.5rem] h-36 shrink-0 rounded-[14px] flex flex-col justify-between p-2 border-[3px] border-white/90 shadow-[0_15px_30px_rgba(0,0,0,0.6)] cursor-pointer group origin-bottom -ml-8 md:-ml-10
                     ${baseBg} 
                     ${canPlay ? `ring-2 ring-white z-20 hover:-translate-y-12 hover:z-30 hover:scale-105 brightness-110` : 'opacity-80 grayscale-[0.2] hover:z-30 hover:-translate-y-4'}
                   `}
                   style={{
-                    transform: `rotate(${(i - myPlayer.hand.length/2) * 5}deg) translateY(${Math.abs(i - myPlayer.hand.length/2) * 2}px)`,
                     zIndex: 10 + i
                   }}
                 >
@@ -318,10 +329,11 @@ export default function GameBoard() {
                         <div className="bg-uno-yellow"></div><div className="bg-uno-green"></div>
                      </div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+            </AnimatePresence>
+          </motion.div>
         </div>
       </main>
 

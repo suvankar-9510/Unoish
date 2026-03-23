@@ -21,9 +21,9 @@ export default function ActionScreen() {
         Welcome, <span className="text-uno-yellow font-black animate-pulse">{playerName}</span>!
       </div>
       
-      <div className="w-full max-w-md bg-surface-container/40 backdrop-blur-md p-10 rounded-[3rem] shadow-[0_0_80px_rgba(0,0,0,0.5)] space-y-10 border border-white/20 z-10">
+      <div className="w-full max-w-md bg-surface-container/40 backdrop-blur-md p-6 md:p-10 rounded-3xl md:rounded-[3rem] shadow-[0_0_80px_rgba(0,0,0,0.5)] space-y-8 md:space-y-10 border border-white/20 z-10">
         
-        <h1 className="font-headline font-black text-4xl text-center text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+        <h1 className="font-headline font-black text-3xl md:text-4xl text-center text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
           Select <span className="text-transparent bg-clip-text bg-gradient-to-r from-uno-blue to-uno-green">Mode</span>
         </h1>
 
@@ -36,19 +36,19 @@ export default function ActionScreen() {
               CREATE ROOM
               <span className="material-symbols-outlined font-black text-3xl">add_circle</span>
             </button>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button 
                 onClick={() => setMode('join')}
-                className="flex-1 bg-uno-green text-white h-20 py-5 rounded-2xl font-headline font-black text-2xl shadow-[0_8px_0_0_#004820] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-2 border-4 border-white/20"
+                className="flex-1 bg-uno-green text-white h-16 md:h-20 py-5 rounded-2xl font-headline font-black text-xl md:text-2xl shadow-[0_6px_0_0_#004820] md:shadow-[0_8px_0_0_#004820] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-2 border-4 border-white/20"
               >
                 JOIN
-                <span className="material-symbols-outlined font-black text-3xl">login</span>
+                <span className="material-symbols-outlined font-black text-2xl md:text-3xl">login</span>
               </button>
               <button 
                 onClick={() => setMode('scan')}
-                className="w-20 bg-uno-yellow text-uno-black h-20 rounded-2xl shadow-[0_8px_0_0_#cc8800] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center border-4 border-white/20"
+                className="w-full sm:w-20 bg-uno-yellow text-uno-black h-16 md:h-20 rounded-2xl shadow-[0_6px_0_0_#cc8800] md:shadow-[0_8px_0_0_#cc8800] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center border-4 border-white/20"
               >
-                <span className="material-symbols-outlined font-black text-4xl">qr_code_scanner</span>
+                <span className="material-symbols-outlined font-black text-3xl md:text-4xl">qr_code_scanner</span>
               </button>
             </div>
           </div>
@@ -125,8 +125,8 @@ export default function ActionScreen() {
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-uno-green/20 rounded-full blur-[100px] pointer-events-none"></div>
 
       {/* Footer */}
-      <footer className="absolute bottom-6 w-full text-center pointer-events-none z-50">
-        <p className="font-headline font-black text-white/60 text-xs tracking-[0.3em] drop-shadow-sm">
+      <footer className="absolute bottom-4 md:bottom-6 w-full text-center pointer-events-none z-50">
+        <p className="font-headline font-black text-white/60 text-[10px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] drop-shadow-sm px-4">
           MADE WITH ❤️ BY <span className="text-uno-yellow drop-shadow-[0_0_10px_#ffaa00]">LORD SUVANKAR</span>
         </p>
       </footer>

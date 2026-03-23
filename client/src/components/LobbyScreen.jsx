@@ -11,16 +11,16 @@ export default function LobbyScreen() {
   const playerCount = gameState.players.length;
 
   return (
-    <div className="font-body text-white min-h-screen flex flex-col relative arena-bg items-center justify-center p-6">
-      <div className="w-full max-w-2xl bg-surface-container/40 backdrop-blur-md p-10 rounded-[3rem] shadow-[0_0_80px_rgba(0,0,0,0.5)] space-y-8 border border-white/20 z-10 text-center">
+    <div className="font-body text-white min-h-screen flex flex-col relative arena-bg items-center justify-center p-4 md:p-6 pb-20 md:pb-6 overflow-y-auto">
+      <div className="w-full max-w-2xl bg-surface-container/40 backdrop-blur-md p-6 md:p-10 rounded-3xl md:rounded-[3rem] shadow-[0_0_80px_rgba(0,0,0,0.5)] space-y-6 md:space-y-8 border border-white/20 z-10 text-center mt-8 md:mt-0">
         <div className="flex flex-col items-center justify-center gap-2">
-           <p className="font-headline font-black tracking-widest text-white/60 uppercase text-sm">ROOM CODE</p>
-           <div className="flex gap-4 items-center">
-             <h1 className="font-headline font-extrabold text-7xl text-uno-yellow tracking-widest bg-black/40 py-4 px-8 rounded-xl border-4 border-dashed border-uno-blue shadow-inner">
+           <p className="font-headline font-black tracking-widest text-white/60 uppercase text-xs md:text-sm">ROOM CODE</p>
+           <div className="flex flex-col sm:flex-row gap-4 items-center">
+             <h1 className="font-headline font-extrabold text-5xl md:text-7xl text-uno-yellow tracking-widest bg-black/40 py-4 px-6 md:px-8 rounded-xl border-4 border-dashed border-uno-blue shadow-inner break-all">
                {gameState.id}
              </h1>
-             <button onClick={() => setShowQR(true)} className="w-16 h-16 bg-white/10 rounded-xl hover:bg-white/20 flex items-center justify-center border-2 border-white/20 shadow-lg active:scale-95 transition">
-               <span className="material-symbols-outlined text-3xl text-white">qr_code_2</span>
+             <button onClick={() => setShowQR(true)} className="w-14 md:w-16 h-14 md:h-16 bg-white/10 rounded-xl hover:bg-white/20 flex items-center justify-center border-2 border-white/20 shadow-lg active:scale-95 transition">
+               <span className="material-symbols-outlined text-2xl md:text-3xl text-white">qr_code_2</span>
              </button>
            </div>
         </div>
@@ -29,14 +29,14 @@ export default function LobbyScreen() {
            <h2 className="text-2xl font-extrabold mb-6 text-white drop-shadow-md">Players ({playerCount}/5)</h2>
           <div className="flex flex-col gap-4">
             {gameState.players.map((p, index) => (
-              <div key={p.id} className="flex justify-between items-center bg-black/40 px-6 py-4 rounded-2xl border-l-[8px] border-uno-red shadow-md backdrop-blur-sm shadow-[0_10px_20px_rgba(0,0,0,0.3)] border-t border-r border-b border-white/10">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-white/10 overflow-hidden border-2 border-white/30">
+              <div key={p.id} className="flex justify-between items-center bg-black/40 px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl border-l-[6px] md:border-l-[8px] border-uno-red shadow-md backdrop-blur-sm shadow-[0_10px_20px_rgba(0,0,0,0.3)] border-t border-r border-b border-white/10">
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="w-8 md:w-10 h-8 md:h-10 rounded-full bg-white/10 overflow-hidden border-2 border-white/30 shrink-0">
                     <img src={p.avatar || `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${p.name}`} alt="Avatar" className="w-full h-full object-cover" />
                   </div>
-                  <span className="font-bold text-lg text-white">{p.name} {p.id === socketId && <span className="text-sm font-black text-uno-green bg-uno-green/20 px-2 py-1 rounded ml-2">YOU</span>}</span>
+                  <span className="font-bold text-base md:text-lg text-white truncate max-w-[120px] sm:max-w-xs text-left">{p.name} {p.id === socketId && <span className="text-[10px] md:text-sm font-black text-uno-green bg-uno-green/20 px-1 md:px-2 py-0.5 md:py-1 rounded ml-1 md:ml-2 align-middle">YOU</span>}</span>
                 </div>
-                {p.isHost && <span className="bg-uno-yellow text-black font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_15px_rgba(255,170,0,0.6)]">HOST</span>}
+                {p.isHost && <span className="bg-uno-yellow text-black font-black text-[10px] md:text-xs px-2 md:px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_15px_rgba(255,170,0,0.6)] shrink-0 ml-2">HOST</span>}
               </div>
             ))}
             {[...Array(5 - playerCount)].map((_, i) => (
@@ -96,8 +96,8 @@ export default function LobbyScreen() {
       )}
 
       {/* Footer */}
-      <footer className="absolute bottom-6 w-full text-center pointer-events-none z-50">
-        <p className="font-headline font-black text-white/60 text-xs tracking-[0.3em] drop-shadow-sm">
+      <footer className="absolute bottom-4 md:bottom-6 w-full text-center pointer-events-none z-50">
+        <p className="font-headline font-black text-white/60 text-[10px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] drop-shadow-sm px-4">
           MADE WITH ❤️ BY <span className="text-uno-yellow drop-shadow-[0_0_10px_#ffaa00]">LORD SUVANKAR</span>
         </p>
       </footer>

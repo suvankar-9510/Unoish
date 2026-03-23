@@ -148,8 +148,8 @@ export default function GameBoard() {
       <main className="flex-1 relative mt-20 mb-24 px-6 overflow-hidden">
         <div className="absolute inset-0 table-glow pointer-events-none"></div>
         
-        {/* Opponents (simplified distribution) */}
-        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-full flex justify-around px-10">
+        {/* Opponents */}
+        <div className="absolute top-4 md:top-8 left-1/2 -translate-x-1/2 w-full flex justify-center gap-2 md:gap-8 px-2 md:px-10 flex-wrap z-20">
           {opponents.map((opp, i) => {
             const punish = activePunishments.find(p => p.victimId === opp.id);
             return (
@@ -159,12 +159,12 @@ export default function GameBoard() {
                     +{punish.amount}
                   </div>
                 )}
-                <div className={`relative w-16 h-16 rounded-full p-1 border-2 ${gameState.currentPlayerIndex === gameState.players.findIndex(p => p.id === opp.id) ? 'glow-active border-uno-green bg-uno-green/20 pulse-ring' : 'border-transparent bg-white/10'}`}>
+                <div className={`relative w-12 md:w-16 h-12 md:h-16 rounded-full p-1 border-2 ${gameState.currentPlayerIndex === gameState.players.findIndex(p => p.id === opp.id) ? 'glow-active border-uno-green bg-uno-green/20 pulse-ring' : 'border-transparent bg-white/10'}`}>
                    <div className="absolute inset-1 rounded-full bg-surface-variant overflow-hidden flex items-center justify-center">
                       <img src={opp.avatar || `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${opp.name}`} alt="avatar" className="w-full h-full object-cover" />
                    </div>
                 </div>
-                <span className="font-label font-bold text-xs uppercase tracking-widest text-white/70 mt-2">
+                <span className="font-label font-bold text-[10px] md:text-xs uppercase tracking-widest text-white/70 mt-1 md:mt-2 max-w-[60px] md:max-w-none truncate text-center">
                   {opp.name} {opp.finishedRank && `(🏆 ${opp.finishedRank})`}
                 </span>
                 {!opp.finishedRank && (
@@ -180,24 +180,24 @@ export default function GameBoard() {
         {/* UNO Call Animation Overlay */}
         {unoCalls?.map(uc => (
           <div key={uc.uid} className="fixed inset-0 pointer-events-none flex flex-col items-center justify-center z-[250] animate-[bounce_0.5s_cubic-bezier(0,0,0.2,1)_3]">
-            <div className="bg-black/60 backdrop-blur-sm p-16 rounded-[4rem] flex flex-col items-center border-[8px] border-uno-red shadow-[0_0_100px_rgba(255,85,85,0.8)] transform -rotate-12 scale-125">
-              <span className="font-headline font-black text-[150px] text-transparent bg-clip-text bg-gradient-to-br from-uno-yellow to-uno-red drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] mb-4">UNO!</span>
-              <span className="font-label font-bold text-4xl text-uno-black bg-uno-yellow px-8 py-3 rounded-full shadow-2xl skew-x-[-10deg] border-4 border-white">{uc.name.toUpperCase()} HAS 1 CARD!</span>
+            <div className="bg-black/60 backdrop-blur-sm p-8 md:p-16 rounded-[2rem] md:rounded-[4rem] flex flex-col items-center border-[4px] md:border-[8px] border-uno-red shadow-[0_0_50px_rgba(255,85,85,0.8)] md:shadow-[0_0_100px_rgba(255,85,85,0.8)] transform -rotate-12 scale-100 md:scale-125">
+              <span className="font-headline font-black text-[80px] md:text-[150px] text-transparent bg-clip-text bg-gradient-to-br from-uno-yellow to-uno-red drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] mb-2 md:mb-4">UNO!</span>
+              <span className="font-label font-bold text-xl md:text-4xl text-uno-black bg-uno-yellow px-4 md:px-8 py-2 md:py-3 rounded-full shadow-2xl skew-x-[-10deg] border-2 md:border-4 border-white">{uc.name.toUpperCase()} HAS 1 CARD!</span>
             </div>
           </div>
         ))}
 
         {/* Center Field */}
-        <div className="h-full flex items-center justify-center shrink-0 mt-8">
-          <div className="relative w-full max-w-sm aspect-square flex items-center justify-center">
+        <div className="h-full flex items-center justify-center shrink-0 mt-8 md:mt-0">
+          <div className="relative w-full max-w-sm ml-0 md:ml-12 aspect-square flex flex-col items-center justify-center">
             <div className="absolute inset-0 border-[3px] border-dashed border-white/5 rounded-full pulse-ring"></div>
             
             {/* Rotate Direction */}
-            <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-white/40">
-              <span className={`material-symbols-outlined text-5xl ${gameState.direction === 1 ? 'animate-[spin_4s_linear_infinite]' : 'animate-[spin_4s_linear_infinite_reverse]'}`}>sync</span>
+            <div className="absolute -top-6 md:-top-10 left-1/2 -translate-x-1/2 text-white/40">
+              <span className={`material-symbols-outlined text-4xl md:text-5xl ${gameState.direction === 1 ? 'animate-[spin_4s_linear_infinite]' : 'animate-[spin_4s_linear_infinite_reverse]'}`}>sync</span>
             </div>
 
-            <div className="flex justify-center items-center gap-12 md:gap-24 z-10 scale-125 pt-4">
+            <div className="flex justify-center items-center gap-8 md:gap-24 z-10 scale-90 md:scale-[1.2] pt-4 -mt-8 md:mt-0">
               {/* Draw Pile */}
               <div onClick={drawCard} className="relative w-[6.5rem] h-36 bg-uno-black rounded-[14px] shadow-[0_20px_40px_rgba(0,0,0,0.8)] flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform border-[3px] border-white/90 shrink-0 group">
                 <div className="absolute inset-1 border border-white/40 rounded-lg pointer-events-none z-10"></div>
@@ -259,8 +259,11 @@ export default function GameBoard() {
         </div>
 
         {/* Player Hand */}
-        <div className={`absolute bottom-[-60px] left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 overflow-x-auto no-scrollbar pt-10 transition-all duration-500 origin-bottom ${!isMyTurn || myPlayer?.finishedRank ? 'scale-75 translate-y-24 opacity-60' : 'scale-90 opacity-100 hover:translate-y-[-20px]'}`}>
-          <div className="flex justify-center -space-x-10 min-w-max pb-8 shrink-0">
+        <div className="absolute bottom-[-50px] md:bottom-[-60px] left-1/2 -translate-x-1/2 w-[100vw] max-w-6xl px-2 md:px-4 overflow-x-auto no-scrollbar pt-10 pb-16 md:pb-8 transition-transform duration-500 origin-bottom flex justify-center">
+          <div 
+             className={`flex justify-center min-w-max pb-8 shrink-0 transition-transform origin-bottom duration-500 will-change-transform ${!isMyTurn || myPlayer?.finishedRank ? 'scale-[0.55] sm:scale-75 translate-y-[40px] md:translate-y-24 opacity-60' : 'scale-[0.70] sm:scale-95 opacity-100 hover:translate-y-[-10px] md:hover:translate-y-[-20px]'}`}
+             style={{ marginLeft: `${myPlayer?.hand.length > 5 ? Math.max(0, (myPlayer.hand.length - 5) * 15) : 0}px` }}
+          >
             {myPlayer?.hand?.map((card, i) => {
               const baseBg = getCardBgColor(card.color);
               const textC = getCardTextColor(card.color);
@@ -271,7 +274,7 @@ export default function GameBoard() {
                 <div 
                   key={card.id} 
                   onClick={() => handleCardClick(card)}
-                  className={`relative w-[6.5rem] h-36 shrink-0 rounded-[14px] flex flex-col justify-between p-2 border-[3px] border-white/90 shadow-[0_15px_30px_rgba(0,0,0,0.6)] cursor-pointer group transition-transform duration-300
+                  className={`relative w-[6.5rem] h-36 shrink-0 rounded-[14px] flex flex-col justify-between p-2 border-[3px] border-white/90 shadow-[0_15px_30px_rgba(0,0,0,0.6)] cursor-pointer group transition-transform duration-300 -ml-8 md:-ml-10
                     ${baseBg} 
                     ${canPlay ? `ring-2 ring-white z-20 hover:-translate-y-12 hover:z-30 hover:scale-105 brightness-110` : 'opacity-80 grayscale-[0.2] hover:z-30 hover:-translate-y-4'}
                   `}
@@ -325,9 +328,9 @@ export default function GameBoard() {
 
       {/* Settings Modal */}
       {showSettings && (
-        <div className="fixed inset-0 z-[400] bg-black/80 backdrop-blur-md flex items-center justify-center">
-          <div className="bg-surface-container-high p-8 rounded-[3rem] text-center space-y-6 max-w-sm w-full border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-            <h2 className="text-4xl font-black text-white">Options</h2>
+        <div className="fixed inset-0 z-[400] bg-black/80 backdrop-blur-md flex items-center justify-center px-4">
+          <div className="bg-surface-container-high p-6 md:p-8 rounded-3xl md:rounded-[3rem] text-center space-y-6 max-w-sm w-full border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <h2 className="text-3xl md:text-4xl font-black text-white">Options</h2>
             <div className="flex flex-col gap-4">
               <button 
                 onClick={() => {

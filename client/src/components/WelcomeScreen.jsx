@@ -38,15 +38,15 @@ export default function WelcomeScreen() {
               </div>
             </div>
             
-            <h1 className="font-headline font-black text-6xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-uno-yellow via-white to-uno-red mt-8 drop-shadow-[0_0_20px_#ffffff]">
+            <h1 className="font-headline font-black text-4xl md:text-6xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-uno-yellow via-white to-uno-red mt-8 drop-shadow-[0_0_20px_#ffffff]">
               Card Clash
             </h1>
-            <p className="font-body text-white/80 font-medium max-w-[280px]">
+            <p className="font-body text-white/80 font-medium text-sm md:text-base max-w-[280px]">
               The ultimate fast-paced arena for legendary tacticians.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-surface-container/40 p-10 rounded-[2.5rem] shadow-[0_0_80px_rgba(0,0,0,0.5)] border border-white/20 space-y-8 backdrop-blur-md">
+          <form onSubmit={handleSubmit} className="bg-surface-container/40 p-6 md:p-10 rounded-3xl md:rounded-[2.5rem] shadow-[0_0_80px_rgba(0,0,0,0.5)] border border-white/20 space-y-6 md:space-y-8 backdrop-blur-md">
             <div className="space-y-3">
               <label className="font-headline font-black text-xs uppercase tracking-[0.2em] text-white/60 ml-2" htmlFor="player-name">
                 Identify Yourself
@@ -77,12 +77,12 @@ export default function WelcomeScreen() {
       </main>
 
       {/* Decorative Blur Orbs */}
-      <div className="absolute -top-20 -right-20 w-[600px] h-[600px] bg-uno-red/20 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-uno-blue/30 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute -top-20 -right-20 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-uno-red/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none"></div>
+      <div className="absolute -bottom-20 -left-20 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-uno-blue/30 rounded-full blur-[80px] md:blur-[120px] pointer-events-none"></div>
 
       {/* Footer */}
-      <footer className="absolute bottom-6 w-full text-center pointer-events-none z-50">
-        <p className="font-headline font-black text-white/60 text-xs tracking-[0.3em] drop-shadow-sm">
+      <footer className="absolute bottom-4 md:bottom-6 w-full text-center pointer-events-none z-50">
+        <p className="font-headline font-black text-white/60 text-[10px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] drop-shadow-sm px-4">
           MADE WITH ❤️ BY <span className="text-uno-yellow drop-shadow-[0_0_10px_#ffaa00]">LORD SUVANKAR</span>
         </p>
       </footer>

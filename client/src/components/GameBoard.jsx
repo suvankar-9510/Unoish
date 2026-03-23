@@ -27,7 +27,7 @@ function TurnTimer({ turnStartTime, turnDuration }) {
 }
 
 export default function GameBoard() {
-  const { gameState, socketId, playCard, drawCard, sendEmoji, activeEmojis, activePunishments, unoCalls } = useGameStore();
+  const { gameState, socketId, playCard, drawCard, sendEmoji, activeEmojis, activePunishments, unoCalls, activeMessages } = useGameStore();
   const [showColorPicker, setShowColorPicker] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -186,6 +186,15 @@ export default function GameBoard() {
             </div>
           </div>
         ))}
+
+        {/* System Messages Overlay */}
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-2 pointer-events-none">
+          {activeMessages?.map(msg => (
+            <div key={msg.id} className="bg-uno-yellow text-uno-black font-headline font-black text-xs md:text-sm px-4 py-2 rounded-full shadow-[0_5px_15px_rgba(255,170,0,0.5)] border-2 border-white animate-[bounce_0.5s_ease]">
+              🤖 {msg.text}
+            </div>
+          ))}
+        </div>
 
         {/* Center Field */}
         <div className="h-full flex items-center justify-center shrink-0 mt-8 md:mt-0">

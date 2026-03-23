@@ -14,6 +14,7 @@ export const useGameStore = create((set, get) => ({
   activeEmojis: [],
   activePunishments: [],
   unoCalls: [],
+  activeMessages: [],
   pendingRoomId: null,
   setPlayerName: (name) => set({ playerName: name }),
   setPendingRoomId: (id) => set({ pendingRoomId: id }),
@@ -32,7 +33,7 @@ export const useGameStore = create((set, get) => ({
   
   leaveRoom: () => {
     socket.emit('leave_room', get().roomId);
-    set({ gameState: null, roomId: '', activeEmojis: [], activePunishments: [], unoCalls: [], pendingRoomId: null });
+    set({ gameState: null, roomId: '', activeEmojis: [], activePunishments: [], unoCalls: [], activeMessages: [], pendingRoomId: null });
   },
 
   disbandRoom: () => {
@@ -122,8 +123,24 @@ socket.on('player_uno', (data) => {
   }, 4000); // UI animation duration 4 seconds
 });
 
+socket.on('player_left', (playerName) => {
+  const store = useGameStore.getState();
+  const newMsg = { id: Math.random().toString(36).substr(2, 9), text: `${playerName} disconnected. An AI robot took their place!` };
+  
+  useGameStore.setState({ 
+    activeMessages: [...store.activeMessages, newMsg] 
+  });
+
+  setTimeout(() => {
+    const currentStore = useGameStore.getState();
+    useGameStore.setState({
+      activeMessages: currentStore.activeMessages.filter(m => m.id !== newMsg.id)
+    });
+  }, 5000);
+});
+
 socket.on('room_disbanded', () => {
-  useGameStore.setState({ gameState: null, roomId: '', activeEmojis: [], activePunishments: [], unoCalls: [], pendingRoomId: null });
+  useGameStore.setState({ gameState: null, roomId: '', activeEmojis: [], activePunishments: [], unoCalls: [], activeMessages: [], pendingRoomId: null });
   alert('The room was disbanded by the host.');
 });
 

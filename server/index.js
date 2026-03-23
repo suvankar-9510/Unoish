@@ -182,14 +182,21 @@ io.on('connection', (socket) => {
     let skipTurn = false;
     let drawAmount = 0;
 
-    if (card.value === 'reverse') room.direction *= -1;
+    const activeCount = room.players.filter(p => !p.finishedRank).length;
+
+    if (card.value === 'reverse') {
+      if (activeCount <= 2) {
+        skipTurn = true; // In 2-player UNO, Reverse acts identically to Skip
+      } else {
+        room.direction *= -1;
+      }
+    }
     if (card.value === 'skip') skipTurn = true;
     if (card.value === 'draw2') { drawAmount = 2; skipTurn = true; }
     if (card.value === 'wild4') { drawAmount = 4; skipTurn = true; }
 
-    const nextPlayerIndex = () => {
-      let idx = room.currentPlayerIndex;
-      const activeCount = room.players.filter(p => !p.finishedRank).length;
+    const getNextPlayerIndex = (startIdx) => {
+      let idx = startIdx;
       if (activeCount === 0) return idx;
 
       do {
@@ -199,7 +206,7 @@ io.on('connection', (socket) => {
       return idx;
     };
 
-    let nextIdx = nextPlayerIndex();
+    let nextIdx = getNextPlayerIndex(room.currentPlayerIndex);
 
     if (drawAmount > 0) {
       const nextPlayer = room.players[nextIdx];
@@ -213,7 +220,7 @@ io.on('connection', (socket) => {
     }
 
     if (skipTurn) {
-      room.currentPlayerIndex = nextPlayerIndex();
+      room.currentPlayerIndex = getNextPlayerIndex(nextIdx); // Skip the immediate next active player
     } else {
       room.currentPlayerIndex = nextIdx;
     }
@@ -309,20 +316,48 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('leave_room', (roomId) => {
-    const room = rooms.get(roomId);
-    if (!room) return;
-    
-    room.players = room.players.filter(p => p.id !== socket.id);
-    if (room.players.length === 0 || room.players.every(p => p.isBot)) {
-      rooms.delete(roomId);
-      if (roomTimers.has(roomId)) {
-        clearTimeout(roomTimers.get(roomId));
-        roomTimers.delete(roomId);
+  function handlePlayerLeaving(socketId) {
+    for (const [roomId, room] of rooms.entries()) {
+      let playerIndex = room.players.findIndex(p => p.id === socketId);
+      if (playerIndex !== -1) {
+        let player = room.players[playerIndex];
+        
+        if (room.gameState === 'playing' || room.gameState === 'ended') {
+          // Convert player to bot seamlessly mid-game
+          player.isBot = true;
+          io.to(roomId).emit('player_left', player.name);
+          
+          if (room.players.every(p => p.isBot)) {
+             rooms.delete(roomId);
+             if (roomTimers.has(roomId)) {
+               clearTimeout(roomTimers.get(roomId));
+               roomTimers.delete(roomId);
+             }
+          } else {
+             io.to(roomId).emit('game_update', room);
+             // If it was exactly their turn, trigger the AI instantly
+             if (room.currentPlayerIndex === playerIndex && !player.finishedRank) {
+               setTimeout(() => playBotTurn(room), 1000);
+             }
+          }
+        } else {
+          // Inside Lobby: Just remove them
+          room.players.splice(playerIndex, 1);
+          if (player.isHost && room.players.length > 0) {
+             room.players[0].isHost = true;
+          }
+          if (room.players.length === 0 || room.players.every(p => p.isBot)) {
+             rooms.delete(roomId);
+          } else {
+             io.to(roomId).emit('game_update', room);
+          }
+        }
       }
-    } else {
-      io.to(roomId).emit('game_update', room);
     }
+  }
+
+  socket.on('leave_room', (roomId) => {
+    handlePlayerLeaving(socket.id);
     socket.leave(roomId);
   });
 
@@ -341,7 +376,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
-    // Optional: handle player leaving logic, e.g., pass host
+    handlePlayerLeaving(socket.id);
   });
 });
 

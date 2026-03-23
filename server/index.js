@@ -96,10 +96,30 @@ io.on('connection', (socket) => {
          clearTimeout(disconnectTimers.get(playerId));
          disconnectTimers.delete(playerId);
        }
-       existingPlayer.id = socket.id; // Update their socket id to the new connection
+       existingPlayer.id = socket.id;
        existingPlayer.disconnected = false;
+       existingPlayer.isBot = false;
        socket.join(roomId);
+
+       // Cancel any pending bot-takeover timer
+       if (disconnectTimers.has(playerId)) {
+         clearTimeout(disconnectTimers.get(playerId));
+         disconnectTimers.delete(playerId);
+       }
+
        io.to(roomId).emit('game_update', room);
+       // Notify others this player came back
+       if (room.started) {
+         io.to(roomId).emit('player_reconnect_notify', { name: existingPlayer.name, id: existingPlayer.id });
+       }
+
+       // If the game is active and it was their turn, restart the turn timer for them
+       if (room.started && !room.gameOver) {
+         const playerIndex = room.players.findIndex(p => p.uuid === playerId);
+         if (room.currentPlayerIndex === playerIndex) {
+           startTurnTimer(roomId);
+         }
+       }
        return;
     }
 
@@ -206,10 +226,12 @@ io.on('connection', (socket) => {
     // If the current player is finished (won), advance to the next active player
     if (room.players[room.currentPlayerIndex]?.finishedRank) {
       let idx = room.currentPlayerIndex;
+      let safety = 0;
       do {
         idx = (idx + room.direction + room.players.length) % room.players.length;
-      } while (room.players[idx].finishedRank);
-      room.currentPlayerIndex = idx;
+        safety++;
+      } while (room.players[idx].finishedRank && safety < room.players.length);
+      if (!room.players[idx].finishedRank) room.currentPlayerIndex = idx;
     }
 
     room.turnStartTime = Date.now();
@@ -324,11 +346,12 @@ io.on('connection', (socket) => {
     const getNextPlayerIndex = (startIdx) => {
       let idx = startIdx;
       if (activeCount === 0) return idx;
-
+      let safety = 0;
       do {
         idx = (idx + room.direction) % room.players.length;
         if (idx < 0) idx += room.players.length;
-      } while (room.players[idx].finishedRank);
+        safety++;
+      } while (room.players[idx].finishedRank && safety < room.players.length);
       return idx;
     };
 
@@ -394,10 +417,12 @@ io.on('connection', (socket) => {
          const getNextPlayerIndex = (startIdx) => {
            let idx = startIdx;
            if (activeCount === 0) return idx;
+           let safety = 0;
            do {
              idx = (idx + room.direction) % room.players.length;
              if (idx < 0) idx += room.players.length;
-           } while (room.players[idx].finishedRank);
+             safety++;
+           } while (room.players[idx].finishedRank && safety < room.players.length);
            return idx;
          };
          
@@ -469,18 +494,19 @@ io.on('connection', (socket) => {
       if (playerIndex !== -1) {
         let player = room.players[playerIndex];
         
-        if (room.gameState === 'playing' || room.gameState === 'ended') {
+        if (room.started) {  // ✅ Fixed: was incorrectly checking room.gameState
           if (!explicitLeave) {
             // Unintentional disconnect: Start 15s grace period
             player.disconnected = true;
             io.to(roomId).emit('game_update', room);
-            io.to(roomId).emit('player_left', player.name + ' disconnected. Waiting 15s to reconnect...');
+            // Notify all other players: disconnect toast
+            io.to(roomId).emit('player_disconnect_notify', { name: player.name, id: player.id });
             
             const timer = setTimeout(() => {
               if (rooms.has(roomId) && player.disconnected) {
                 // Time expired -> AI takeover
                 player.isBot = true;
-                player.disconnected = false; // Resolved
+                player.disconnected = false;
                 io.to(roomId).emit('player_left', player.name + ' abandoned the match. AI took over!');
                 io.to(roomId).emit('game_update', room);
                 if (room.currentPlayerIndex === playerIndex && !player.finishedRank) {

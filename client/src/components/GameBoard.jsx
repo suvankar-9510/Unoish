@@ -50,12 +50,10 @@ export default function GameBoard() {
   const amISpectating = amIPreGameSpectator || (myPlayer?.finishedRank > 0);
   const spectatorCount = gameState.spectators?.length || 0;
   
-  // Arrange opponents starting from the player to the left
-  const opponents = [];
-  for (let i = 1; i < gameState.players.length; i++) {
-    const idx = (myPlayerIndex + i) % gameState.players.length;
-    opponents.push(gameState.players[idx]);
-  }
+  // For pre-game spectators: show ALL players; for players: show only opponents
+  const opponents = amIPreGameSpectator
+    ? gameState.players // all players visible as "opponents" to the spectator
+    : gameState.players.filter((_, idx) => idx !== myPlayerIndex);
 
   const isMyTurn = gameState.currentPlayerIndex === myPlayerIndex;
   const topCard = gameState.discardPile[gameState.discardPile.length - 1];
@@ -176,8 +174,15 @@ export default function GameBoard() {
       <main className={`flex-1 relative mt-20 mb-24 px-6 overflow-hidden transition-transform duration-500 will-change-transform ${isReversing ? 'rotate-[-3deg] scale-[0.98]' : 'rotate-0 scale-100'}`}>
         <div className="absolute inset-0 table-glow pointer-events-none"></div>
         
-        {/* Opponents */}
-        <div className="absolute top-4 md:top-8 left-1/2 -translate-x-1/2 w-full flex justify-center gap-2 md:gap-8 px-2 md:px-10 flex-wrap z-20">
+        {/* Opponents — grid layout for spectators, flex row for players */}
+        <div className={`absolute top-4 md:top-6 left-1/2 -translate-x-1/2 w-full px-2 md:px-6 z-20
+          ${ amIPreGameSpectator
+            ? `grid place-items-center gap-x-2 gap-y-6 md:gap-x-4
+               ${ opponents.length <= 2 ? 'grid-cols-2'
+                  : opponents.length === 3 ? 'grid-cols-3'
+                  : opponents.length === 4 ? 'grid-cols-4'
+                  : 'grid-cols-5' }`
+            : 'flex justify-center gap-2 md:gap-8 flex-wrap' }`}>
           {opponents.map((opp, i) => {
             const punish = activePunishments.find(p => p.victimId === opp.id);
             const isSkipped = activeSkips.some(s => s.victimId === opp.id);
@@ -193,7 +198,10 @@ export default function GameBoard() {
                     +{punish.amount}
                   </div>
                 )}
-                <div className={`relative w-12 md:w-16 h-12 md:h-16 rounded-full p-1 border-2 ${gameState.currentPlayerIndex === gameState.players.findIndex(p => p.id === opp.id) ? 'glow-active border-uno-green bg-uno-green/20 pulse-ring' : 'border-transparent bg-white/10'} ${opp.disconnected ? 'opacity-30 grayscale' : ''}`}>
+                <div className={`relative rounded-full p-1 border-2
+                  ${amIPreGameSpectator ? 'w-14 h-14 md:w-20 md:h-20' : 'w-12 h-12 md:w-16 md:h-16'}
+                  ${gameState.currentPlayerIndex === gameState.players.findIndex(p => p.id === opp.id) ? 'glow-active border-uno-green bg-uno-green/20 pulse-ring' : 'border-transparent bg-white/10'}
+                  ${opp.disconnected ? 'opacity-30 grayscale' : ''}`}>
                    <div className="absolute inset-1 rounded-full bg-surface-variant overflow-hidden flex items-center justify-center relative">
                       <img src={opp.avatar || `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${opp.name}`} alt="avatar" className="w-full h-full object-cover" />
                       {opp.disconnected && (
@@ -259,12 +267,20 @@ export default function GameBoard() {
         ))}
 
         {/* System Messages Overlay */}
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-2 pointer-events-none">
-          {activeMessages?.map(msg => (
-            <div key={msg.id} className="bg-uno-yellow text-uno-black font-headline font-black text-xs md:text-sm px-4 py-2 rounded-full shadow-[0_5px_15px_rgba(255,170,0,0.5)] border-2 border-white animate-[bounce_0.5s_ease]">
-              🤖 {msg.text}
-            </div>
-          ))}
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-2 pointer-events-none items-center">
+          {activeMessages?.map(msg => {
+            const styles = {
+              disconnect: 'bg-uno-red/90 text-white border-white/30 shadow-[0_5px_15px_rgba(255,85,85,0.5)]',
+              reconnect:  'bg-uno-green/90 text-white border-white/30 shadow-[0_5px_15px_rgba(0,200,100,0.5)]',
+              ai:         'bg-uno-yellow text-uno-black border-white shadow-[0_5px_15px_rgba(255,170,0,0.5)]',
+            }[msg.type] || 'bg-uno-yellow text-uno-black border-white shadow-[0_5px_15px_rgba(255,170,0,0.5)]';
+            const icon = { disconnect: '📡', reconnect: '✅', ai: '🤖' }[msg.type] || '🤖';
+            return (
+              <div key={msg.id} className={`${styles} font-headline font-black text-xs md:text-sm px-5 py-2 rounded-full border-2 animate-[bounce_0.5s_ease] flex items-center gap-2 whitespace-nowrap`}>
+                <span>{icon}</span> {msg.text}
+              </div>
+            );
+          })}
         </div>
 
         {/* Center Field */}
@@ -342,8 +358,8 @@ export default function GameBoard() {
           </div>
         </div>
 
-        {/* Player Hand */}
-        <div className={`absolute bottom-[-50px] md:bottom-[-60px] left-1/2 -translate-x-1/2 w-[100vw] max-w-6xl px-2 md:px-4 overflow-x-auto no-scrollbar pt-10 pb-16 md:pb-8 transition-transform duration-500 origin-bottom flex justify-center ${activeSkips.some(s => s.victimId === socketId) ? 'animate-[bounce_0.2s_ease-in-out_infinite] blur-[2px]' : ''}`}>
+        {/* Player Hand — hidden for pre-game spectators who have no cards */}
+        {!amIPreGameSpectator && <div className={`absolute bottom-[-50px] md:bottom-[-60px] left-1/2 -translate-x-1/2 w-[100vw] max-w-6xl px-2 md:px-4 overflow-x-auto no-scrollbar pt-10 pb-16 md:pb-8 transition-transform duration-500 origin-bottom flex justify-center ${activeSkips.some(s => s.victimId === socketId) ? 'animate-[bounce_0.2s_ease-in-out_infinite] blur-[2px]' : ''}`}>
           
           {/* My Player Skips / Action Overlay */}
           {activeSkips.some(s => s.victimId === socketId) && (
@@ -411,7 +427,7 @@ export default function GameBoard() {
             })}
             </AnimatePresence>
           </motion.div>
-        </div>
+        </div>}
       </main>
 
       {/* My Player Punishment Overlay */}

@@ -46,11 +46,18 @@ export const useGameStore = create((set, get) => ({
   joinRoom: (roomId) => {
     const playerId = localStorage.getItem('unoish_uuid') || Math.random().toString(36).substr(2, 9);
     localStorage.setItem('unoish_uuid', playerId);
+    // Persist session for refresh recovery
+    localStorage.setItem('unoish_roomId', roomId);
+    localStorage.setItem('unoish_playerName', get().playerName);
+    localStorage.setItem('unoish_isSpectator', 'false');
     socket.emit('join_room', { roomId, playerName: get().playerName, playerId });
   },
   
   leaveRoom: () => {
     socket.emit('leave_room', get().roomId);
+    // Clear persisted session
+    localStorage.removeItem('unoish_roomId');
+    localStorage.removeItem('unoish_isSpectator');
     set({ gameState: null, roomId: '', activeEmojis: [], activePunishments: [], activeSkips: [], unoCalls: [], activeMessages: [], isReversing: false, pendingRoomId: null });
   },
 
@@ -77,6 +84,10 @@ export const useGameStore = create((set, get) => ({
   joinAsSpectator: (roomId) => {
     const playerId = localStorage.getItem('unoish_uuid') || Math.random().toString(36).substr(2, 9);
     localStorage.setItem('unoish_uuid', playerId);
+    // Persist session for refresh recovery
+    localStorage.setItem('unoish_roomId', roomId);
+    localStorage.setItem('unoish_playerName', get().playerName);
+    localStorage.setItem('unoish_isSpectator', 'true');
     socket.emit('join_as_spectator', { roomId, playerName: get().playerName, playerId });
   },
 
@@ -97,6 +108,23 @@ export const useGameStore = create((set, get) => ({
 
 socket.on('connect', () => {
   useGameStore.setState({ socketId: socket.id, isConnected: true });
+
+  // Auto-reconnect if we have a saved session
+  const savedRoom = localStorage.getItem('unoish_roomId');
+  const savedName = localStorage.getItem('unoish_playerName');
+  const savedIsSpectator = localStorage.getItem('unoish_isSpectator') === 'true';
+  const savedUuid = localStorage.getItem('unoish_uuid');
+
+  if (savedRoom && savedName && savedUuid) {
+    // Restore name to store immediately so routing works
+    useGameStore.setState({ playerName: savedName });
+
+    if (savedIsSpectator) {
+      socket.emit('join_as_spectator', { roomId: savedRoom, playerName: savedName, playerId: savedUuid });
+    } else {
+      socket.emit('join_room', { roomId: savedRoom, playerName: savedName, playerId: savedUuid });
+    }
+  }
 });
 
 socket.on('disconnect', () => {
@@ -108,7 +136,22 @@ socket.on('connect_error', () => {
 });
 
 socket.on('room_created', (roomId) => {
+  // Persist session for refresh recovery
+  const { playerName } = useGameStore.getState();
+  localStorage.setItem('unoish_roomId', roomId);
+  localStorage.setItem('unoish_playerName', playerName);
+  localStorage.setItem('unoish_isSpectator', 'false');
   useGameStore.setState({ roomId, isCreatingRoom: false });
+});
+
+socket.on('error', (message) => {
+  // If server refuses reconnect (e.g. game ended), clear saved session
+  if (message === 'Room not found' || message === 'Game already started') {
+    localStorage.removeItem('unoish_roomId');
+    localStorage.removeItem('unoish_isSpectator');
+  }
+  useGameStore.setState({ isCreatingRoom: false });
+  alert(message);
 });
 
 socket.on('game_update', (roomData) => {
@@ -169,20 +212,34 @@ socket.on('player_uno', (data) => {
   }, 4000); // UI animation duration 4 seconds
 });
 
-socket.on('player_left', (playerName) => {
+socket.on('player_left', (text) => {
   const store = useGameStore.getState();
-  const newMsg = { id: Math.random().toString(36).substr(2, 9), text: `${playerName} disconnected. An AI robot took their place!` };
-  
-  useGameStore.setState({ 
-    activeMessages: [...store.activeMessages, newMsg] 
-  });
-
+  const newMsg = { id: Math.random().toString(36).substr(2, 9), text, type: 'ai' };
+  useGameStore.setState({ activeMessages: [...store.activeMessages, newMsg] });
   setTimeout(() => {
-    const currentStore = useGameStore.getState();
-    useGameStore.setState({
-      activeMessages: currentStore.activeMessages.filter(m => m.id !== newMsg.id)
-    });
+    const s = useGameStore.getState();
+    useGameStore.setState({ activeMessages: s.activeMessages.filter(m => m.id !== newMsg.id) });
   }, 5000);
+});
+
+socket.on('player_disconnect_notify', ({ name }) => {
+  const store = useGameStore.getState();
+  const newMsg = { id: Math.random().toString(36).substr(2, 9), text: `${name} disconnected! Waiting 15s...`, type: 'disconnect' };
+  useGameStore.setState({ activeMessages: [...store.activeMessages, newMsg] });
+  setTimeout(() => {
+    const s = useGameStore.getState();
+    useGameStore.setState({ activeMessages: s.activeMessages.filter(m => m.id !== newMsg.id) });
+  }, 6000);
+});
+
+socket.on('player_reconnect_notify', ({ name }) => {
+  const store = useGameStore.getState();
+  const newMsg = { id: Math.random().toString(36).substr(2, 9), text: `${name} reconnected! 🎉`, type: 'reconnect' };
+  useGameStore.setState({ activeMessages: [...store.activeMessages, newMsg] });
+  setTimeout(() => {
+    const s = useGameStore.getState();
+    useGameStore.setState({ activeMessages: s.activeMessages.filter(m => m.id !== newMsg.id) });
+  }, 4000);
 });
 
 socket.on('direction_reversed', () => {

@@ -4,13 +4,22 @@ import { io } from 'socket.io-client';
 const URL = import.meta.env.MODE === 'production' 
   ? (import.meta.env.VITE_SERVER_URL || window.location.origin) 
   : 'http://localhost:3001';
-export const socket = io(URL);
+
+export const socket = io(URL, {
+  reconnection: true,
+  reconnectionAttempts: Infinity,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
+  timeout: 20000,
+});
 
 export const useGameStore = create((set, get) => ({
   playerName: '',
   roomId: '',
   gameState: null,
   socketId: null,
+  isConnected: false,
+  isCreatingRoom: false,
   activeEmojis: [],
   activePunishments: [],
   activeSkips: [],
@@ -28,7 +37,10 @@ export const useGameStore = create((set, get) => ({
   createRoom: () => {
     const playerId = localStorage.getItem('unoish_uuid') || Math.random().toString(36).substr(2, 9);
     localStorage.setItem('unoish_uuid', playerId);
+    set({ isCreatingRoom: true });
     socket.emit('create_room', { playerName: get().playerName, playerId });
+    // Timeout safety — if no response in 10s, clear loading
+    setTimeout(() => set({ isCreatingRoom: false }), 10000);
   },
   
   joinRoom: (roomId) => {
@@ -84,11 +96,19 @@ export const useGameStore = create((set, get) => ({
 }));
 
 socket.on('connect', () => {
-  useGameStore.setState({ socketId: socket.id });
+  useGameStore.setState({ socketId: socket.id, isConnected: true });
+});
+
+socket.on('disconnect', () => {
+  useGameStore.setState({ isConnected: false });
+});
+
+socket.on('connect_error', () => {
+  useGameStore.setState({ isConnected: false, isCreatingRoom: false });
 });
 
 socket.on('room_created', (roomId) => {
-  useGameStore.setState({ roomId });
+  useGameStore.setState({ roomId, isCreatingRoom: false });
 });
 
 socket.on('game_update', (roomData) => {

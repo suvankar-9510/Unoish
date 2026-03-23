@@ -10,6 +10,17 @@ app.use(cors());
 app.get('/', (req, res) => {
   res.send('UNO Sync Backend Server is officially UP and deeply connected! 🚀');
 });
+app.get('/ping', (req, res) => res.json({ status: 'ok', ts: Date.now() }));
+
+const PORT = process.env.PORT || 3001;
+const SERVER_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+// Keep-alive: ping self every 14 minutes so Render free tier never cold-starts
+setInterval(() => {
+  const http_mod = require('http');
+  try {
+    http_mod.get(`${SERVER_URL}/ping`, () => {}).on('error', () => {});
+  } catch(e) {}
+}, 14 * 60 * 1000);
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -541,5 +552,5 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = 3001;
 server.listen(PORT, () => console.log(`UNO Sync server running on port ${PORT}`));
+

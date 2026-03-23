@@ -3,14 +3,19 @@ import { useGameStore } from '../store/gameStore';
 import { Scanner } from '@yudiel/react-qr-scanner';
 
 export default function ActionScreen() {
-  const { createRoom, joinRoom, joinAsSpectator, playerName } = useGameStore();
+  const { createRoom, joinRoom, joinAsSpectator, playerName, isConnected, isCreatingRoom } = useGameStore();
   const [joinCode, setJoinCode] = useState('');
+  const [joinLoading, setJoinLoading] = useState(false);
   const [spectateCode, setSpectateCode] = useState('');
   const [mode, setMode] = useState(null); // 'create' | 'join' | 'scan' | 'spectate'
 
   const handleJoin = (e) => {
     e.preventDefault();
-    if (joinCode.trim().length === 4) joinRoom(joinCode.trim().toUpperCase());
+    if (joinCode.trim().length === 4) {
+      setJoinLoading(true);
+      joinRoom(joinCode.trim().toUpperCase());
+      setTimeout(() => setJoinLoading(false), 10000);
+    }
   };
 
   const handleSpectate = (e) => {
@@ -24,6 +29,14 @@ export default function ActionScreen() {
       <div className="absolute top-10 left-10 text-xl font-bold font-headline text-white/80">
         Welcome, <span className="text-uno-yellow font-black animate-pulse">{playerName}</span>!
       </div>
+
+      {/* Server connection status banner */}
+      {!isConnected && (
+        <div className="fixed top-0 left-0 w-full z-[999] bg-uno-red/90 backdrop-blur-sm py-2 px-4 flex items-center justify-center gap-3">
+          <span className="material-symbols-outlined text-white text-lg animate-spin">sync</span>
+          <span className="font-headline font-black text-white text-sm uppercase tracking-widest">Connecting to server — please wait...</span>
+        </div>
+      )}
       
       <div className="w-full max-w-md bg-surface-container/40 backdrop-blur-md p-6 md:p-10 rounded-3xl md:rounded-[3rem] shadow-[0_0_80px_rgba(0,0,0,0.5)] space-y-8 md:space-y-10 border border-white/20 z-10">
         
@@ -35,15 +48,22 @@ export default function ActionScreen() {
           <div className="flex flex-col gap-4">
             <button 
               onClick={() => createRoom()}
-              className="w-full bg-uno-blue text-white h-20 py-5 rounded-2xl font-headline font-black text-2xl shadow-[0_8px_0_0_#003076] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-3 border-4 border-white/20"
+              disabled={!isConnected || isCreatingRoom}
+              className="w-full bg-uno-blue text-white h-20 py-5 rounded-2xl font-headline font-black text-2xl shadow-[0_8px_0_0_#003076] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-3 border-4 border-white/20 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
             >
-              CREATE ROOM
-              <span className="material-symbols-outlined font-black text-3xl">add_circle</span>
+              {isCreatingRoom ? (
+                <><span className="material-symbols-outlined text-3xl animate-spin">sync</span> CREATING...</>
+              ) : !isConnected ? (
+                <><span className="material-symbols-outlined text-3xl animate-spin">sync</span> CONNECTING...</>
+              ) : (
+                <>CREATE ROOM <span className="material-symbols-outlined font-black text-3xl">add_circle</span></>
+              )}
             </button>
             <div className="flex flex-col sm:flex-row gap-4">
               <button 
                 onClick={() => setMode('join')}
-                className="flex-1 bg-uno-green text-white h-16 md:h-20 py-5 rounded-2xl font-headline font-black text-xl md:text-2xl shadow-[0_6px_0_0_#004820] md:shadow-[0_8px_0_0_#004820] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-2 border-4 border-white/20"
+                disabled={!isConnected}
+                className="flex-1 bg-uno-green text-white h-16 md:h-20 py-5 rounded-2xl font-headline font-black text-xl md:text-2xl shadow-[0_6px_0_0_#004820] md:shadow-[0_8px_0_0_#004820] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-2 border-4 border-white/20 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 JOIN
                 <span className="material-symbols-outlined font-black text-2xl md:text-3xl">login</span>
@@ -84,7 +104,9 @@ export default function ActionScreen() {
             </div>
             <div className="flex gap-4">
               <button type="button" onClick={() => setMode(null)} className="w-1/3 bg-surface-variant text-on-surface h-16 py-4 rounded-2xl font-headline font-black text-xl hover:bg-surface-dim transition-all flex items-center justify-center">BACK</button>
-              <button type="submit" disabled={joinCode.length !== 4} className="w-2/3 bg-uno-green text-white h-16 py-4 rounded-2xl font-headline font-black text-xl shadow-[0_6px_0_0_#004820] active:shadow-none active:translate-y-[6px] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">JOIN</button>
+              <button type="submit" disabled={joinCode.length !== 4 || joinLoading || !isConnected} className="w-2/3 bg-uno-green text-white h-16 py-4 rounded-2xl font-headline font-black text-xl shadow-[0_6px_0_0_#004820] active:shadow-none active:translate-y-[6px] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                {joinLoading ? <><span className="material-symbols-outlined animate-spin">sync</span> JOINING...</> : 'JOIN'}
+              </button>
             </div>
           </form>
         )}

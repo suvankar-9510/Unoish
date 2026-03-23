@@ -57,9 +57,10 @@ io.on('connection', (socket) => {
     rooms.set(roomId, {
       id: roomId,
       players: [{ id: socket.id, uuid: playerId, name: playerName, hand: [], isHost: true, avatar: `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${playerName}` }],
+      spectators: [], // Pre-game and winner spectators
       deck: [],
       discardPile: [],
-      direction: 1, // 1 for clockwise, -1 for counter-clockwise
+      direction: 1,
       currentPlayerIndex: 0,
       started: false
     });
@@ -102,6 +103,67 @@ io.on('connection', (socket) => {
 
     room.players.push({ id: socket.id, uuid: playerId, name: playerName, hand: [], isHost: false, avatar: `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${playerName}` });
     socket.join(roomId);
+    io.to(roomId).emit('game_update', room);
+  });
+
+  socket.on('join_as_spectator', ({ roomId, playerName, playerId }) => {
+    const room = rooms.get(roomId);
+    if (!room) { socket.emit('error', 'Room not found'); return; }
+
+    // Reconnect existing spectator
+    const existingSpec = room.spectators?.find(s => s.uuid === playerId);
+    if (existingSpec) {
+      existingSpec.id = socket.id;
+      socket.join(roomId);
+      io.to(roomId).emit('game_update', room);
+      return;
+    }
+
+    if ((room.spectators?.length || 0) >= 4) {
+      socket.emit('error', 'Spectator seats are full (max 4)');
+      return;
+    }
+
+    if (!room.spectators) room.spectators = [];
+    room.spectators.push({ id: socket.id, uuid: playerId, name: playerName, avatar: `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${playerName}`, isSpectator: true });
+    socket.join(roomId);
+    io.to(roomId).emit('game_update', room);
+  });
+
+  socket.on('move_to_spectator', ({ roomId, targetPlayerId }) => {
+    const room = rooms.get(roomId);
+    if (!room) return;
+    const hostId = room.players[0]?.id;
+    if (socket.id !== hostId) return; // Only host
+    if ((room.spectators?.length || 0) >= 4) {
+      socket.emit('error', 'Spectator seats are full (max 4)');
+      return;
+    }
+
+    const playerIndex = room.players.findIndex(p => p.id === targetPlayerId);
+    if (playerIndex === -1 || playerIndex === 0) return; // Can't move host
+
+    const [player] = room.players.splice(playerIndex, 1);
+    if (!room.spectators) room.spectators = [];
+    room.spectators.push({ ...player, hand: [], isSpectator: true });
+    io.to(roomId).emit('game_update', room);
+  });
+
+  socket.on('move_to_player', ({ roomId, targetSocketId }) => {
+    const room = rooms.get(roomId);
+    if (!room) return;
+    const hostId = room.players[0]?.id;
+    if (socket.id !== hostId) return;
+    if (room.players.length >= 5) {
+      socket.emit('error', 'Room is full');
+      return;
+    }
+
+    const specIndex = room.spectators?.findIndex(s => s.id === targetSocketId);
+    if (specIndex === -1 || specIndex === undefined) return;
+
+    const [spec] = room.spectators.splice(specIndex, 1);
+    room.players.push({ ...spec, hand: [], isSpectator: false });
     io.to(roomId).emit('game_update', room);
   });
 

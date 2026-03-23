@@ -60,6 +60,26 @@ export const useGameStore = create((set, get) => ({
 
   drawCard: () => {
     socket.emit('draw_card', get().roomId);
+  },
+
+  joinAsSpectator: (roomId) => {
+    const playerId = localStorage.getItem('unoish_uuid') || Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('unoish_uuid', playerId);
+    socket.emit('join_as_spectator', { roomId, playerName: get().playerName, playerId });
+  },
+
+  moveToSpectator: (targetPlayerId) => {
+    socket.emit('move_to_spectator', { roomId: get().roomId, targetPlayerId });
+  },
+
+  moveToPlayer: (targetSocketId) => {
+    socket.emit('move_to_player', { roomId: get().roomId, targetSocketId });
+  },
+
+  isSpectatorMode: () => {
+    const { gameState, socketId } = get();
+    if (!gameState) return false;
+    return gameState.spectators?.some(s => s.id === socketId) || false;
   }
 }));
 

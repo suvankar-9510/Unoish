@@ -3,15 +3,19 @@ import { useGameStore } from '../store/gameStore';
 import { Scanner } from '@yudiel/react-qr-scanner';
 
 export default function ActionScreen() {
-  const { createRoom, joinRoom, playerName } = useGameStore();
+  const { createRoom, joinRoom, joinAsSpectator, playerName } = useGameStore();
   const [joinCode, setJoinCode] = useState('');
-  const [mode, setMode] = useState(null); // 'create' or 'join'
+  const [spectateCode, setSpectateCode] = useState('');
+  const [mode, setMode] = useState(null); // 'create' | 'join' | 'scan' | 'spectate'
 
   const handleJoin = (e) => {
     e.preventDefault();
-    if (joinCode.trim().length === 4) {
-      joinRoom(joinCode.trim().toUpperCase());
-    }
+    if (joinCode.trim().length === 4) joinRoom(joinCode.trim().toUpperCase());
+  };
+
+  const handleSpectate = (e) => {
+    e.preventDefault();
+    if (spectateCode.trim().length === 4) joinAsSpectator(spectateCode.trim().toUpperCase());
   };
 
   return (
@@ -28,7 +32,7 @@ export default function ActionScreen() {
         </h1>
 
         {!mode && (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             <button 
               onClick={() => createRoom()}
               className="w-full bg-uno-blue text-white h-20 py-5 rounded-2xl font-headline font-black text-2xl shadow-[0_8px_0_0_#003076] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-3 border-4 border-white/20"
@@ -51,6 +55,14 @@ export default function ActionScreen() {
                 <span className="material-symbols-outlined font-black text-3xl md:text-4xl">qr_code_scanner</span>
               </button>
             </div>
+            {/* Spectator Join Button */}
+            <button 
+              onClick={() => setMode('spectate')}
+              className="w-full bg-white/10 text-white/80 h-14 py-4 rounded-2xl font-headline font-bold text-lg shadow-inner hover:bg-white/20 transition-all flex items-center justify-center gap-3 border-2 border-dashed border-white/30"
+            >
+              <span className="material-symbols-outlined font-black text-2xl text-uno-yellow">visibility</span>
+              WATCH AS SPECTATOR
+            </button>
           </div>
         )}
 
@@ -71,19 +83,36 @@ export default function ActionScreen() {
               />
             </div>
             <div className="flex gap-4">
-              <button 
-                type="button"
-                onClick={() => setMode(null)}
-                className="w-1/3 bg-surface-variant text-on-surface h-16 py-4 rounded-2xl font-headline font-black text-xl hover:bg-surface-dim transition-all flex items-center justify-center"
-              >
-                BACK
-              </button>
-              <button 
-                type="submit"
-                disabled={joinCode.length !== 4}
-                className="w-2/3 bg-uno-green text-white h-16 py-4 rounded-2xl font-headline font-black text-xl shadow-[0_6px_0_0_#004820] active:shadow-none active:translate-y-[6px] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                JOIN
+              <button type="button" onClick={() => setMode(null)} className="w-1/3 bg-surface-variant text-on-surface h-16 py-4 rounded-2xl font-headline font-black text-xl hover:bg-surface-dim transition-all flex items-center justify-center">BACK</button>
+              <button type="submit" disabled={joinCode.length !== 4} className="w-2/3 bg-uno-green text-white h-16 py-4 rounded-2xl font-headline font-black text-xl shadow-[0_6px_0_0_#004820] active:shadow-none active:translate-y-[6px] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">JOIN</button>
+            </div>
+          </form>
+        )}
+
+        {mode === 'spectate' && (
+          <form onSubmit={handleSpectate} className="space-y-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 justify-center mb-2">
+                <span className="material-symbols-outlined text-3xl text-uno-yellow">visibility</span>
+                <label className="font-headline font-black text-xs uppercase tracking-[0.2em] text-uno-yellow ml-2" htmlFor="spec-code">
+                  Spectator Mode — Enter Room Code
+                </label>
+              </div>
+              <input 
+                className="w-full bg-white/10 border-2 border-dashed border-uno-yellow/50 h-20 px-6 rounded-2xl font-headline font-black text-4xl text-center uppercase focus:ring-0 focus:border-uno-yellow focus:bg-white/10 transition-all placeholder:text-white/20 outline-none tracking-[0.3em] text-uno-yellow shadow-inner" 
+                id="spec-code"
+                maxLength={4}
+                value={spectateCode}
+                onChange={(e) => setSpectateCode(e.target.value)}
+                placeholder="XXXX" 
+                type="text"
+              />
+              <p className="text-white/40 text-xs text-center">You will watch the match. You can see players' cards by holding their avatar.</p>
+            </div>
+            <div className="flex gap-4">
+              <button type="button" onClick={() => setMode(null)} className="w-1/3 bg-surface-variant text-on-surface h-16 py-4 rounded-2xl font-headline font-black text-xl hover:bg-surface-dim transition-all flex items-center justify-center">BACK</button>
+              <button type="submit" disabled={spectateCode.length !== 4} className="w-2/3 bg-uno-yellow text-uno-black h-16 py-4 rounded-2xl font-headline font-black text-xl shadow-[0_6px_0_0_#cc8800] active:shadow-none active:translate-y-[6px] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span className="material-symbols-outlined font-black">visibility</span> WATCH
               </button>
             </div>
           </form>

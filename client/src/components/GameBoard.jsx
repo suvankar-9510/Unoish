@@ -45,6 +45,10 @@ export default function GameBoard() {
 
   const myPlayerIndex = gameState.players.findIndex(p => p.id === socketId);
   const myPlayer = gameState.players[myPlayerIndex];
+  const amIPreGameSpectator = gameState.spectators?.some(s => s.id === socketId) || false;
+  // Full spectator = either pre-game spectator who joined with code, OR a player who won
+  const amISpectating = amIPreGameSpectator || (myPlayer?.finishedRank > 0);
+  const spectatorCount = gameState.spectators?.length || 0;
   
   // Arrange opponents starting from the player to the left
   const opponents = [];
@@ -114,11 +118,25 @@ export default function GameBoard() {
       <header className="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-black/40 backdrop-blur-xl rounded-b-3xl shadow-2xl">
         <div className="flex items-center gap-3">
           <span className="text-xl font-black text-white font-headline tracking-tight uppercase">Room: {gameState.id}</span>
+          {/* Spectator Counter */}
+          {spectatorCount > 0 && (
+            <div className="flex items-center gap-1 bg-uno-yellow/20 border border-uno-yellow/40 px-2 py-0.5 rounded-full">
+              <span className="material-symbols-outlined text-uno-yellow text-sm">visibility</span>
+              <span className="text-uno-yellow font-black text-xs">{spectatorCount}</span>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20 bg-surface-variant">
-            <img src={myPlayer?.avatar || `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${myPlayer?.name}`} alt="Me" className="w-full h-full object-cover"/>
-          </div>
+          {amIPreGameSpectator ? (
+            <div className="flex items-center gap-2 bg-uno-yellow/20 border border-uno-yellow/40 px-3 py-1 rounded-full">
+              <span className="material-symbols-outlined text-uno-yellow text-base">visibility</span>
+              <span className="text-uno-yellow font-black text-xs uppercase tracking-wider">Spectating</span>
+            </div>
+          ) : (
+            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20 bg-surface-variant">
+              <img src={myPlayer?.avatar || `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${myPlayer?.name}`} alt="Me" className="w-full h-full object-cover"/>
+            </div>
+          )}
           <span 
             onClick={() => setShowSettings(true)} 
             className="material-symbols-outlined text-white/60 cursor-pointer hover:text-white transition hover:rotate-90"
@@ -213,7 +231,7 @@ export default function GameBoard() {
                 )}
 
                 {/* Spectator Mode: show card count + long-press hint badge */}
-                {myPlayer?.finishedRank > 0 && !opp.finishedRank && (
+                {amISpectating && !opp.finishedRank && (
                   <div
                     onMouseDown={() => startLongPress(opp.id)}
                     onMouseUp={cancelLongPress}
@@ -448,13 +466,13 @@ export default function GameBoard() {
         </div>
       )}
 
-      {/* Spectator Mode Banner */}
-      {myPlayer?.finishedRank > 0 && !gameState.gameOver && (
+      {/* Spectator Mode Banner — winner spectators AND pre-game spectators */}
+      {amISpectating && !gameState.gameOver && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 pointer-events-none z-[60] w-full px-4">
           <div className="max-w-md mx-auto bg-uno-yellow/90 backdrop-blur-xl px-5 py-3 rounded-full shadow-2xl border-2 border-white flex items-center gap-3 justify-center">
             <span className="text-2xl">👁️</span>
             <p className="font-headline font-black text-sm md:text-base text-uno-black uppercase tracking-widest">
-              🏆 Spectator — Hold a player badge to peek their hand!
+              {amIPreGameSpectator ? '👁️ Spectating — Hold any badge to peek cards!' : '🏆 Spectator — Hold a player badge to peek their hand!'}
             </p>
           </div>
         </div>

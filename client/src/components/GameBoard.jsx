@@ -28,7 +28,7 @@ function TurnTimer({ turnStartTime, turnDuration }) {
 }
 
 export default function GameBoard() {
-  const { gameState, socketId, playCard, drawCard, sendEmoji, activeEmojis, activePunishments, unoCalls, activeMessages } = useGameStore();
+  const { gameState, socketId, playCard, drawCard, sendEmoji, activeEmojis, activePunishments, unoCalls, activeMessages, activeSkips, isReversing } = useGameStore();
   const [showColorPicker, setShowColorPicker] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -146,15 +146,21 @@ export default function GameBoard() {
       </div>
 
       {/* Main Board */}
-      <main className="flex-1 relative mt-20 mb-24 px-6 overflow-hidden">
+      <main className={`flex-1 relative mt-20 mb-24 px-6 overflow-hidden transition-transform duration-500 will-change-transform ${isReversing ? 'rotate-[-3deg] scale-[0.98]' : 'rotate-0 scale-100'}`}>
         <div className="absolute inset-0 table-glow pointer-events-none"></div>
         
         {/* Opponents */}
         <div className="absolute top-4 md:top-8 left-1/2 -translate-x-1/2 w-full flex justify-center gap-2 md:gap-8 px-2 md:px-10 flex-wrap z-20">
           {opponents.map((opp, i) => {
             const punish = activePunishments.find(p => p.victimId === opp.id);
+            const isSkipped = activeSkips.some(s => s.victimId === opp.id);
             return (
-              <div key={opp.id} className={`flex flex-col items-center justify-center relative ${opp.finishedRank ? 'opacity-50 saturate-50' : ''}`}>
+              <div key={opp.id} className={`flex flex-col items-center justify-center relative ${opp.finishedRank ? 'opacity-50 saturate-50' : ''} ${isSkipped ? 'animate-[bounce_0.2s_ease-in-out_infinite]' : ''}`}>
+                {isSkipped && (
+                  <div className="absolute top-12 md:top-14 z-[250] font-headline font-black text-lg md:text-2xl text-uno-red drop-shadow-[0_0_15px_#ff5555] rotate-[-15deg] border-[3px] border-uno-red bg-black/80 backdrop-blur-sm px-2 py-0 rounded">
+                    SKIPPED!
+                  </div>
+                )}
                 {punish && (
                   <div className="absolute -bottom-10 z-[200] font-headline font-black text-5xl text-uno-red animate-ping drop-shadow-[0_0_20px_#ff5555]">
                     +{punish.amount}
@@ -290,7 +296,14 @@ export default function GameBoard() {
         </div>
 
         {/* Player Hand */}
-        <div className="absolute bottom-[-50px] md:bottom-[-60px] left-1/2 -translate-x-1/2 w-[100vw] max-w-6xl px-2 md:px-4 overflow-x-auto no-scrollbar pt-10 pb-16 md:pb-8 transition-transform duration-500 origin-bottom flex justify-center">
+        <div className={`absolute bottom-[-50px] md:bottom-[-60px] left-1/2 -translate-x-1/2 w-[100vw] max-w-6xl px-2 md:px-4 overflow-x-auto no-scrollbar pt-10 pb-16 md:pb-8 transition-transform duration-500 origin-bottom flex justify-center ${activeSkips.some(s => s.victimId === socketId) ? 'animate-[bounce_0.2s_ease-in-out_infinite] blur-[2px]' : ''}`}>
+          
+          {/* My Player Skips / Action Overlay */}
+          {activeSkips.some(s => s.victimId === socketId) && (
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 z-[300] font-headline font-black text-4xl md:text-6xl text-uno-red drop-shadow-[0_0_25px_#ff5555] rotate-[-5deg] border-4 border-uno-red bg-black/80 px-6 py-2 rounded-xl">
+               YOU WERE SKIPPED!
+             </div>
+          )}
           <motion.div 
              layout
              className={`flex justify-center min-w-max pb-8 shrink-0 transition-transform origin-bottom duration-500 will-change-transform ${!isMyTurn || myPlayer?.finishedRank ? 'scale-[0.55] sm:scale-75 translate-y-[40px] md:translate-y-24 opacity-60' : 'scale-[0.70] sm:scale-95 opacity-100 hover:translate-y-[-10px] md:hover:translate-y-[-20px]'}`}

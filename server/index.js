@@ -242,6 +242,12 @@ io.on('connection', (socket) => {
       }
     }
 
+    if (card.value === 'skip' || (card.value === 'reverse' && activeCount <= 2)) {
+      io.to(roomId).emit('player_skipped', { victimId: room.players[nextIdx].id });
+    } else if (card.value === 'reverse') {
+      io.to(roomId).emit('direction_reversed');
+    }
+
     if (skipTurn) {
       room.currentPlayerIndex = getNextPlayerIndex(nextIdx); // Skip the immediate next active player
     } else {

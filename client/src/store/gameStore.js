@@ -13,8 +13,10 @@ export const useGameStore = create((set, get) => ({
   socketId: null,
   activeEmojis: [],
   activePunishments: [],
+  activeSkips: [],
   unoCalls: [],
   activeMessages: [],
+  isReversing: false,
   pendingRoomId: null,
   setPlayerName: (name) => set({ playerName: name }),
   setPendingRoomId: (id) => set({ pendingRoomId: id }),
@@ -37,7 +39,7 @@ export const useGameStore = create((set, get) => ({
   
   leaveRoom: () => {
     socket.emit('leave_room', get().roomId);
-    set({ gameState: null, roomId: '', activeEmojis: [], activePunishments: [], unoCalls: [], activeMessages: [], pendingRoomId: null });
+    set({ gameState: null, roomId: '', activeEmojis: [], activePunishments: [], activeSkips: [], unoCalls: [], activeMessages: [], isReversing: false, pendingRoomId: null });
   },
 
   disbandRoom: () => {
@@ -143,8 +145,31 @@ socket.on('player_left', (playerName) => {
   }, 5000);
 });
 
+socket.on('direction_reversed', () => {
+  useGameStore.setState({ isReversing: true });
+  setTimeout(() => {
+    useGameStore.setState({ isReversing: false });
+  }, 1000); // UI animation duration 1 second
+});
+
+socket.on('player_skipped', (data) => {
+  const store = useGameStore.getState();
+  const newSkip = { ...data, id: Math.random().toString(36).substr(2, 9) };
+  
+  useGameStore.setState({ 
+    activeSkips: [...store.activeSkips, newSkip] 
+  });
+
+  setTimeout(() => {
+    const currentStore = useGameStore.getState();
+    useGameStore.setState({
+      activeSkips: currentStore.activeSkips.filter(s => s.id !== newSkip.id)
+    });
+  }, 2000); // UI animation duration 2 seconds
+});
+
 socket.on('room_disbanded', () => {
-  useGameStore.setState({ gameState: null, roomId: '', activeEmojis: [], activePunishments: [], unoCalls: [], activeMessages: [], pendingRoomId: null });
+  useGameStore.setState({ gameState: null, roomId: '', activeEmojis: [], activePunishments: [], activeSkips: [], unoCalls: [], activeMessages: [], isReversing: false, pendingRoomId: null });
   alert('The room was disbanded by the host.');
 });
 

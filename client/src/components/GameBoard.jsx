@@ -188,12 +188,29 @@ export default function GameBoard() {
                       </motion.div>
                    )}
                 </div>
-                <span className={`font-label font-bold text-[10px] md:text-xs uppercase tracking-widest ${opp.disconnected ? 'text-uno-red animate-pulse' : 'text-white/70'} mt-1 md:mt-2 max-w-[60px] md:max-w-none truncate text-center`}>
-                  {opp.name} {opp.finishedRank ? `(🏆 ${opp.finishedRank})` : opp.disconnected ? '(Wait...)' : ''}
+                <span className={`font-label font-bold text-[10px] md:text-xs uppercase tracking-widest ${opp.disconnected ? 'text-uno-red animate-pulse' : 'text-white/70'} mt-1 md:mt-2 max-w-[60px] md:max-w-none truncate text-center flex flex-col items-center leading-tight`}>
+                  {opp.name}
+                  {opp.finishedRank ? (
+                    <span className="text-uno-yellow font-black text-[12px] md:text-sm drop-shadow-md mt-1 animate-bounce">🏆 WINNER {opp.finishedRank}</span>
+                  ) : opp.disconnected ? (
+                    <span className="text-[10px] mt-1">(Wait...)</span>
+                  ) : null}
                 </span>
-                {!opp.finishedRank && (
+
+                {!opp.finishedRank && !myPlayer?.finishedRank && (
                   <div className="absolute -bottom-2 -right-2 md:bottom-2 md:-right-2 bg-uno-red text-white text-[10px] md:text-xs font-black w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full border border-white shadow-lg z-50">
                     {opp.hand?.length || opp.cardCount}
+                  </div>
+                )}
+
+                {/* Spectator Mode (See opponent cards) */}
+                {!opp.finishedRank && myPlayer?.finishedRank > 0 && opp.hand && (
+                  <div className="absolute top-[60px] md:top-[80px] left-1/2 -translate-x-1/2 flex justify-center -space-x-2 md:-space-x-3 w-32 md:w-48 flex-wrap z-50 pointer-events-none pb-4">
+                    {opp.hand.map((card, idx) => (
+                       <div key={card.id + idx} className={`w-5 h-7 md:w-8 md:h-12 rounded border border-white/50 shadow-md ${getCardBgColor(card.color)} shrink-0 flex items-center justify-center -mb-2`} style={{ zIndex: 10 + idx }}>
+                          <span className="text-[8px] md:text-[10px] font-black text-white leading-none drop-shadow-md">{renderCardValue(card.value)}</span>
+                       </div>
+                    ))}
                   </div>
                 )}
               </div>

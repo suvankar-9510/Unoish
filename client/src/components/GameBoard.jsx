@@ -31,6 +31,15 @@ export default function GameBoard() {
   const { gameState, socketId, playCard, drawCard, sendEmoji, activeEmojis, activePunishments, unoCalls, activeMessages, activeSkips, isReversing } = useGameStore();
   const [showColorPicker, setShowColorPicker] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [peekPlayerId, setPeekPlayerId] = useState(null); // Spectator long-press peek
+  const longPressTimer = React.useRef(null);
+
+  const startLongPress = (playerId) => {
+    longPressTimer.current = setTimeout(() => setPeekPlayerId(playerId), 400);
+  };
+  const cancelLongPress = () => {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+  };
 
   if (!gameState) return null;
 
@@ -203,14 +212,17 @@ export default function GameBoard() {
                   </div>
                 )}
 
-                {/* Spectator Mode (See opponent cards) */}
-                {!opp.finishedRank && myPlayer?.finishedRank > 0 && opp.hand && (
-                  <div className="absolute top-[60px] md:top-[80px] left-1/2 -translate-x-1/2 flex justify-center -space-x-2 md:-space-x-3 w-32 md:w-48 flex-wrap z-50 pointer-events-none pb-4">
-                    {opp.hand.map((card, idx) => (
-                       <div key={card.id + idx} className={`w-5 h-7 md:w-8 md:h-12 rounded border border-white/50 shadow-md ${getCardBgColor(card.color)} shrink-0 flex items-center justify-center -mb-2`} style={{ zIndex: 10 + idx }}>
-                          <span className="text-[8px] md:text-[10px] font-black text-white leading-none drop-shadow-md">{renderCardValue(card.value)}</span>
-                       </div>
-                    ))}
+                {/* Spectator Mode: show card count + long-press hint badge */}
+                {myPlayer?.finishedRank > 0 && !opp.finishedRank && (
+                  <div
+                    onMouseDown={() => startLongPress(opp.id)}
+                    onMouseUp={cancelLongPress}
+                    onTouchStart={() => startLongPress(opp.id)}
+                    onTouchEnd={cancelLongPress}
+                    className="absolute -bottom-2 -right-2 bg-uno-yellow text-uno-black text-[9px] md:text-[10px] font-black w-8 h-8 md:w-9 md:h-9 flex flex-col items-center justify-center rounded-full border-2 border-white shadow-lg z-50 cursor-pointer select-none"
+                  >
+                    <span>{opp.hand?.length ?? '?'}</span>
+                    <span style={{fontSize: '7px', lineHeight: '1'}}>hold</span>
                   </div>
                 )}
               </div>
@@ -436,8 +448,20 @@ export default function GameBoard() {
         </div>
       )}
 
-      {/* Turn overlay */}
-      {!isMyTurn && gameState.players[gameState.currentPlayerIndex] && (
+      {/* Spectator Mode Banner */}
+      {myPlayer?.finishedRank > 0 && !gameState.gameOver && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 pointer-events-none z-[60] w-full px-4">
+          <div className="max-w-md mx-auto bg-uno-yellow/90 backdrop-blur-xl px-5 py-3 rounded-full shadow-2xl border-2 border-white flex items-center gap-3 justify-center">
+            <span className="text-2xl">👁️</span>
+            <p className="font-headline font-black text-sm md:text-base text-uno-black uppercase tracking-widest">
+              🏆 Spectator — Hold a player badge to peek their hand!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Turn overlay — only show for active players */}
+      {!isMyTurn && !myPlayer?.finishedRank && gameState.players[gameState.currentPlayerIndex] && (
         <div className="fixed bottom-36 left-1/2 -translate-x-1/2 pointer-events-none z-50">
           <div className="bg-uno-green/80 backdrop-blur-xl px-6 py-3 rounded-full shadow-2xl border border-uno-green flex items-center gap-3">
             <div className="w-2.5 h-2.5 rounded-full bg-white animate-ping"></div>
@@ -497,6 +521,52 @@ export default function GameBoard() {
           </button>
         </div>
       )}
+      {/* Spectator Peek Modal (long-press) */}
+      {peekPlayerId && (() => {
+        const peekedPlayer = gameState.players.find(p => p.id === peekPlayerId);
+        if (!peekedPlayer || !peekedPlayer.hand) return null;
+        return (
+          <div
+            className="fixed inset-0 z-[500] bg-black/85 backdrop-blur-md flex flex-col items-center justify-center gap-4 p-4"
+            onMouseUp={() => setPeekPlayerId(null)}
+            onTouchEnd={() => setPeekPlayerId(null)}
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <img src={peekedPlayer.avatar || `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${peekedPlayer.name}`} alt="avatar" className="w-12 h-12 rounded-full border-4 border-uno-yellow shadow-lg" />
+              <div>
+                <p className="font-headline font-black text-2xl md:text-3xl text-white">{peekedPlayer.name}</p>
+                <p className="text-uno-yellow text-xs font-bold uppercase tracking-widest">{peekedPlayer.hand.length} cards in hand</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap justify-center gap-2 md:gap-3 max-w-xl w-full overflow-y-auto max-h-[60vh]">
+              {peekedPlayer.hand.map((card, idx) => (
+                <div key={card.id + idx} className={`relative w-14 h-20 md:w-20 md:h-28 rounded-xl flex flex-col justify-between p-1.5 md:p-2 border-2 border-white/80 shadow-xl shrink-0 ${getCardBgColor(card.color)}`}>
+                  <div className="absolute inset-0.5 border border-white/30 rounded-[10px] pointer-events-none z-10"></div>
+                  <span className="font-headline font-black text-xs md:text-sm text-white z-10 leading-none">{renderCardValue(card.value)}</span>
+                  <div className="flex items-center justify-center">
+                    {card.type === 'wild' ? (
+                      <span className="material-symbols-outlined text-white text-xl md:text-3xl" style={{fontVariationSettings:"'FILL' 1"}}>auto_fix_high</span>
+                    ) : (
+                      <div className={`w-7 md:w-10 h-10 md:h-14 bg-white rounded-t-full rounded-b-full flex items-center justify-center shadow-inner rotate-[-15deg]`}>
+                        <span className={`font-black text-lg md:text-2xl ${getCardTextColor(card.color)} rotate-[15deg] leading-none`}>{renderCardValue(card.value)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="font-headline font-black text-xs md:text-sm text-white rotate-180 self-end z-10 leading-none">{renderCardValue(card.value)}</span>
+                  {card.type === 'wild' && (
+                    <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 -z-10 rounded-xl overflow-hidden opacity-40">
+                      <div className="bg-uno-red"></div><div className="bg-uno-blue"></div>
+                      <div className="bg-uno-yellow"></div><div className="bg-uno-green"></div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-white/50 text-xs mt-2">Release to close</p>
+          </div>
+        );
+      })()}
+
     </div>
   );
 }

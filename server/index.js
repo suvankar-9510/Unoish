@@ -115,6 +115,30 @@ io.on('connection', (socket) => {
       clearTimeout(roomTimers.get(roomId));
     }
 
+    // AUTO-ADVANCE: If the current player has already finished, skip them
+    const activePlayers = room.players.filter(p => !p.finishedRank);
+    if (activePlayers.length <= 1) {
+      // Game should be over
+      if (activePlayers.length === 1) {
+        const finishedCount = room.players.filter(p => p.finishedRank).length;
+        activePlayers[0].finishedRank = finishedCount + 1;
+        activePlayers[0].points = 0;
+      }
+      room.gameOver = true;
+      room.winner = room.players.find(p => p.finishedRank === 1)?.id;
+      io.to(roomId).emit('game_update', room);
+      return;
+    }
+
+    // If the current player is finished (won), advance to the next active player
+    if (room.players[room.currentPlayerIndex]?.finishedRank) {
+      let idx = room.currentPlayerIndex;
+      do {
+        idx = (idx + room.direction + room.players.length) % room.players.length;
+      } while (room.players[idx].finishedRank);
+      room.currentPlayerIndex = idx;
+    }
+
     room.turnStartTime = Date.now();
     const currentPlayer = room.players[room.currentPlayerIndex];
     const isBot = currentPlayer?.isBot;
@@ -126,6 +150,12 @@ io.on('connection', (socket) => {
     const timerId = setTimeout(() => {
       const currentRoom = rooms.get(roomId);
       if (!currentRoom || currentRoom.currentPlayerIndex !== room.currentPlayerIndex) return;
+
+      // Safety guard: never auto-play for a finished player
+      if (currentPlayer.finishedRank) {
+        startTurnTimer(roomId);
+        return;
+      }
 
       const topCard = currentRoom.discardPile[currentRoom.discardPile.length - 1];
       const playableCard = currentPlayer.hand.find(card => 
